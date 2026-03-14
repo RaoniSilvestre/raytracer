@@ -1,4 +1,4 @@
-#include "app.hpp"
+#include "core/app.hpp"
 #include <gtest/gtest.h>
 
 TEST(AppTest, SumAddsTwoIntegers) {
