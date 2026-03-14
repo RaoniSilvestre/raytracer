@@ -1,18 +1,14 @@
 #include "background_color.hpp"
-#include <cmath>
-#include <cstdint>
 
-uint8_t interpolate(uint8_t a, uint8_t b, float t) {
-  float a_ = static_cast<float>(a) * (1 - t);
-  float b_ = static_cast<float>(b) * t;
-  float val = a_ - b_;
-  return static_cast<uint8_t>(std::round(val));
-}
+BackgroundColor::BackgroundColor(Color bl, Color br, Color tl, Color tr)
+    : bl(bl), br(br), tl(tl), tr(tr) {}
+
+float interpolate(float a, float b, float t) { return a * (1.0f - t) + b * t; }
 
 Color BackgroundColor::lerp(const Color &a, const Color &b, float t) const {
-  uint8_t red = interpolate(a.red, b.red, t);
-  uint8_t green = interpolate(a.green, b.green, t);
-  uint8_t blue = interpolate(a.blue, b.blue, t);
+  float red = interpolate(a.red, b.red, t);
+  float green = interpolate(a.green, b.green, t);
+  float blue = interpolate(a.blue, b.blue, t);
 
   return Color{red, green, blue};
 }
