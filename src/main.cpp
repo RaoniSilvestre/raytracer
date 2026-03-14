@@ -16,14 +16,10 @@ int main() {
 
   std::cout << "P3\n" << width << " " << height << "\n255\n";
 
-  // Loop de linhas (y)
   for (int j = height - 1; j >= 0; --j) {
-    // Loop de colunas (x)
+    float v = static_cast<float>(j) / static_cast<float>(height - 1);
     for (int i = 0; i < width; ++i) {
-
-      // IMPORTANTE: U e V SEMPRE entre 0.0 e 1.0 para o lerp funcionar
       float u = static_cast<float>(i) / static_cast<float>(width - 1);
-      float v = static_cast<float>(j) / static_cast<float>(height - 1);
 
       Color color = bg.sampleUV(u, v);
 
