@@ -29,4 +29,6 @@ public:
     return is_near(red, other.red) && is_near(green, other.green) &&
            is_near(blue, other.blue);
   }
+
+  static Color parseColorString(const char *color_str);
 };

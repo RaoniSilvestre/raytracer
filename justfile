@@ -1,5 +1,6 @@
 build_dir := "build"
 app_name := "app"
+scene := "scenes/scene01.xml"
 
 default: build
 
@@ -10,8 +11,8 @@ setup:
 build:
     cmake --build {{build_dir}}
 
-run: build
-    ./{{build_dir}}/src/{{app_name}}
+run *args=scene: build
+    ./{{build_dir}}/src/{{app_name}} {{args}}
 
 test: build
     ctest --test-dir {{build_dir}} --output-on-failure
