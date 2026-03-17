@@ -1,10 +1,12 @@
 #include "app.hpp"
+#include "core/film.hpp"
 #include "object_factory.hpp"
 #include "tinyxml2.h"
 #include <iostream>
 #include <memory>
 #include <ostream>
 #include <string>
+#include <sys/types.h>
 
 std::unique_ptr<BackgroundColor> App::background = nullptr;
 std::unique_ptr<Film> App::film = nullptr;
@@ -63,7 +65,24 @@ void App::parse(const RunningOptions &opts) {
   }
 }
 
-void App::run(const RunningOptions &opts) { App::parse(opts); }
+void App::render(){
+  std::cout << ">>>Começando renderização\n";
+  const u_int32_t Y_RES = film->y_res;
+  const u_int32_t X_RES = film->x_res;
+  for(u_int32_t i = 0; i < Y_RES; i++){
+    const float y_proportion = float(i)/float(Y_RES);
+    for(u_int32_t j = 0; j<X_RES;j++){
+      const float x_proportion = float(j)/float(X_RES);
+      film->buffer[i][j] = background->sampleUV(x_proportion, y_proportion);
+    }
+  }
+}
+
+void App::run(const RunningOptions &opts) { 
+  App::parse(opts);
+  App::render();
+  film->export_image();
+}
 
 void App::make_film(const ParamSet &ps) {
   int x_res = ps.retrieve<int>("x_res");

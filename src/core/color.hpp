@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 
 class Color {
 
@@ -18,7 +19,10 @@ public:
   int red_int() const { return map_to_255(red); }
   int green_int() const { return map_to_255(green); }
   int blue_int() const { return map_to_255(blue); }
-
+  friend std::ostream& operator<<(std::ostream& os, Color c){
+    os << c.red_int() << " " << c.green_int() << " " << c.blue_int() << " "; 
+    return os;
+  }
   bool operator==(const Color &other) const {
     const float epsilon = 0.001f;
 
