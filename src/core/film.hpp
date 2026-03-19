@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <vector>
 
+
+
 class Film {
 public:
   std::string type;
@@ -29,4 +31,5 @@ public:
     }
 private:
   void export_ppm();
+  bool export_png();
 };
