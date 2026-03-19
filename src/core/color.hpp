@@ -20,9 +20,10 @@ public:
   uint8_t red_int() const { return map_to_255(red); }
   uint8_t green_int() const { return map_to_255(green); }
   uint8_t blue_int() const { return map_to_255(blue); }
-  friend std::ostream& operator<<(std::ostream& os, Color c){
-    os << static_cast<int>(c.red_int()) << " " << 
-    static_cast<int>(c.green_int()) << " " << static_cast<int>(c.blue_int()) << " "; 
+  friend std::ostream &operator<<(std::ostream &os, Color c) {
+    os << static_cast<int>(c.red_int()) << " "
+       << static_cast<int>(c.green_int()) << " "
+       << static_cast<int>(c.blue_int()) << " ";
     return os;
   }
   bool operator==(const Color &other) const {
