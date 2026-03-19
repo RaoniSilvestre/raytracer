@@ -1,6 +1,5 @@
 #include "film.hpp"
 #include "../lib/lodepng/lodepng.h"
-#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <sys/types.h>
