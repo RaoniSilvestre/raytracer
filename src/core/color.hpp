@@ -1,13 +1,14 @@
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <ostream>
 
 class Color {
 
 private:
-  static int map_to_255(float value) {
+  static uint8_t map_to_255(float value) {
     float clamped = std::clamp(value, 0.0f, 255.0f);
-    return static_cast<int>(std::lround(clamped));
+    return static_cast<uint8_t>(std::lround(clamped));
   }
 
 public:
@@ -16,11 +17,12 @@ public:
   Color(float red, float green, float blue)
       : red(red), green(green), blue(blue) {}
 
-  int red_int() const { return map_to_255(red); }
-  int green_int() const { return map_to_255(green); }
-  int blue_int() const { return map_to_255(blue); }
+  uint8_t red_int() const { return map_to_255(red); }
+  uint8_t green_int() const { return map_to_255(green); }
+  uint8_t blue_int() const { return map_to_255(blue); }
   friend std::ostream& operator<<(std::ostream& os, Color c){
-    os << c.red_int() << " " << c.green_int() << " " << c.blue_int() << " "; 
+    os << static_cast<int>(c.red_int()) << " " << 
+    static_cast<int>(c.green_int()) << " " << static_cast<int>(c.blue_int()) << " "; 
     return os;
   }
   bool operator==(const Color &other) const {
