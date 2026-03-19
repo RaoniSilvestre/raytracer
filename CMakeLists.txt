@@ -38,5 +38,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 add_subdirectory(src)
+add_subdirectory(lib)
 enable_testing()
 add_subdirectory(tests)

@@ -6,7 +6,11 @@ add_library(core_lib ${SOURCES})
 
 target_include_directories(core_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(core_lib PUBLIC tinyxml2::tinyxml2)
+target_link_libraries(core_lib 
+    PUBLIC 
+        tinyxml2
+        lodepng
+)
 
 add_executable(app main.cpp)
 
