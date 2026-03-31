@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <sys/types.h>
 
@@ -44,6 +45,8 @@ void App::parse(const RunningOptions &opts) {
 
   auto element = root->FirstChildElement();
 
+  std::unique_ptr<Film> film_ = nullptr;
+
   while (element) {
     std::string tag_name = element->Value();
 
@@ -53,6 +56,9 @@ void App::parse(const RunningOptions &opts) {
       auto world_element = element->FirstChildElement();
       while (world_element) {
         process_tag(world_element);
+        // salva o film pradepois
+        // quando chega na camera
+        // coloca o film dentro da camera
         world_element = world_element->NextSiblingElement();
       }
     } else if (tag_name == "world_end") {
@@ -78,8 +84,17 @@ void App::render() {
   }
 }
 
+void App::initialize() {
+  if (!film || !camera) {
+    throw new std::runtime_error("Camera ou filme não inicializados.");
+  }
+
+  camera->set_film(film);
+}
+
 void App::run(const RunningOptions &opts) {
   App::parse(opts);
+  App::initialize();
   App::render();
   film->export_image();
 }
