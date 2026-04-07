@@ -1,6 +1,6 @@
 build_dir := "build"
 app_name := "app"
-scene := "scenes/scene01.xml"
+scene := "scenes/scene-orthographic-camera.xml"
 
 default: build
 

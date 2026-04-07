@@ -1,5 +1,7 @@
 #include "object_factory.hpp"
 #include "core/background_color.hpp"
+#include "core/param_set.hpp"
+#include "math/vector_3.hpp"
 #include "tinyxml2.h"
 #include <stdexcept>
 #include <string>
@@ -11,9 +13,9 @@ ParamSet ObjectFactory::parse(tinyxml2::XMLElement *tag) {
 
   std::string tag_name = tag->Value();
 
-  auto it = map.find(tag_name);
+  auto it = param_set_parser_map.find(tag_name);
 
-  if (it != map.end()) {
+  if (it != param_set_parser_map.end()) {
     return it->second(tag);
   } else {
     throw std::runtime_error("Tag desconhecida encontrada no XML: " + tag_name);
@@ -88,34 +90,62 @@ ParamSet ObjectFactory::parseBackground(tinyxml2::XMLElement *tag) {
     throw std::runtime_error("Tag XML nula em parseBackground.");
 
   auto ps = ParamSet();
-  const char *type_attr = tag->Attribute("type");
-  if (!type_attr || std::string(type_attr) != "colors") {
-    throw std::runtime_error("Tipo de background deve ser 'colors'.");
+  std::string type_attr = std::string(tag->Attribute("type"));
+
+  if (type_attr.empty()) {
+    throw std::runtime_error("Tipo de background vazio.");
   }
 
-  const char *color_str = tag->Attribute("color");
-
-  if (color_str) {
-    ps.insert("color", Color::parseColorString(color_str));
-  } else {
+  // Multiplas cores!
+  if (type_attr == "colors") {
     const char *bl = tag->Attribute("bl");
     const char *tl = tag->Attribute("tl");
     const char *tr = tag->Attribute("tr");
     const char *br = tag->Attribute("br");
 
     if (bl && tl && tr && br) {
+      ps.insert("type", "colors");
       ps.insert("bl", Color::parseColorString(bl));
       ps.insert("tl", Color::parseColorString(tl));
       ps.insert("tr", Color::parseColorString(tr));
       ps.insert("br", Color::parseColorString(br));
+
+      return ps;
     } else {
       throw std::runtime_error("Background deve ter ou o atributo 'color' ou "
                                "os quatro cantos (bl, tl, tr, br).");
     }
   }
 
-  const char *mapping = tag->Attribute("mapping");
-  ps.insert("mapping", std::string(mapping ? mapping : "screen"));
+  // Uma cor só
+  if (type_attr == "single_color") {
+    const char *color_str = tag->Attribute("color");
+    ps.insert("type", "single_color");
+    ps.insert("color", Color::parseColorString(color_str));
+    return ps;
+  }
+
+  throw std::runtime_error("Tipo de background não encontrado.");
+}
+
+ParamSet ObjectFactory::parseLookAt(tinyxml2::XMLElement *tag) {
+  auto ps = ParamSet();
+
+  auto look_at_str = tag->Attribute("look_at");
+  auto look_from_str = tag->Attribute("look_from");
+  auto up_str = tag->Attribute("up");
+
+  if (!look_at_str || !look_from_str || !up_str) {
+    throw std::runtime_error("Atributo obrigatório não encontrado em lookat");
+  }
+
+  auto look_at = Vector3::parseSingleString(look_at_str);
+  auto look_from = Vector3::parseSingleString(look_from_str);
+  auto up = Vector3::parseSingleString(up_str);
+
+  ps.insert("look_at", look_at);
+  ps.insert("look_from", look_from);
+  ps.insert("up", up);
 
   return ps;
 }

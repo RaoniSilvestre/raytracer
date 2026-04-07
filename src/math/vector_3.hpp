@@ -14,7 +14,9 @@
 
 #include <iostream>
 #include <math.h>
+#include <sstream>
 #include <stdlib.h>
+#include <string>
 
 class Vector3 {
 public:
@@ -50,6 +52,7 @@ public:
     return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
   }
   inline void make_unit_vector();
+  static Vector3 parseSingleString(const std::string &s);
 
   float e[3];
 };
@@ -57,6 +60,13 @@ public:
 inline std::istream &operator>>(std::istream &is, Vector3 &t) {
   is >> t.e[0] >> t.e[1] >> t.e[2];
   return is;
+}
+
+static Vector3 parseSingleString(const std::string &s) {
+  std::stringstream ss(s);
+  Vector3 v;
+  ss >> v;
+  return v;
 }
 
 inline std::ostream &operator<<(std::ostream &os, const Vector3 &t) {
