@@ -3,6 +3,8 @@
 #include "core/param_set.hpp"
 #include "math/vector_3.hpp"
 #include "tinyxml2.h"
+#include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -45,21 +47,29 @@ ParamSet ObjectFactory::parseFilm(tinyxml2::XMLElement *tag) {
     throw std::runtime_error("Tipo para film deve ser 'image'.");
   }
 
-  const char *x_res_ptr = tag->Attribute("x_res");
-  const char *y_res_ptr = tag->Attribute("y_res");
+  const char *x_res_ptr = tag->Attribute("w_res");
+  const char *y_res_ptr = tag->Attribute("h_res");
   const char *filename_ptr = tag->Attribute("filename");
   const char *img_type_ptr = tag->Attribute("img_type");
+
+  for (const tinyxml2::XMLAttribute *attr = tag->FirstAttribute();
+       attr != nullptr; attr = attr->Next()) {
+    const char *nome = attr->Name();
+    const char *valor = attr->Value();
+
+    std::cout << nome << ": " << valor << std::endl;
+  }
 
   if (!x_res_ptr || !y_res_ptr || !filename_ptr || !img_type_ptr) {
     throw std::runtime_error("Atributos obrigatórios (x_res, y_res, filename "
                              "ou img_type) faltando em Film.");
   }
 
-  int x_res, y_res;
+  u_int32_t x_res, y_res;
 
   try {
-    x_res = std::stoi(x_res_ptr);
-    y_res = std::stoi(y_res_ptr);
+    x_res = static_cast<uint32_t>(std::stoul(x_res_ptr));
+    y_res = static_cast<uint32_t>(std::stoul(y_res_ptr));
 
     if (x_res <= 0 || y_res <= 0) {
       throw std::runtime_error(
@@ -128,6 +138,13 @@ ParamSet ObjectFactory::parseBackground(tinyxml2::XMLElement *tag) {
   throw std::runtime_error("Tipo de background não encontrado.");
 }
 
+Vector3 parseSingleString(const std::string &s) {
+  std::stringstream ss(s);
+  Vector3 v;
+  ss >> v;
+  return v;
+}
+
 ParamSet ObjectFactory::parseLookAt(tinyxml2::XMLElement *tag) {
   auto ps = ParamSet();
 
@@ -139,13 +156,42 @@ ParamSet ObjectFactory::parseLookAt(tinyxml2::XMLElement *tag) {
     throw std::runtime_error("Atributo obrigatório não encontrado em lookat");
   }
 
-  auto look_at = Vector3::parseSingleString(look_at_str);
-  auto look_from = Vector3::parseSingleString(look_from_str);
-  auto up = Vector3::parseSingleString(up_str);
+  auto look_at = parseSingleString(look_at_str);
+  auto look_from = parseSingleString(look_from_str);
+  auto up = parseSingleString(up_str);
 
   ps.insert("look_at", look_at);
   ps.insert("look_from", look_from);
   ps.insert("up", up);
 
   return ps;
+}
+
+ParamSet ObjectFactory::parseCamera(tinyxml2::XMLElement *tag) {
+  auto ps = ParamSet();
+  std::string type = std::string(tag->Attribute("type"));
+
+  if (type == "orthographic") {
+    ps.insert("type", type);
+    auto screen_window_str = tag->Attribute("screen_window");
+
+    if (!screen_window_str) {
+      throw std::runtime_error(
+          "Screen window da câmera orthografica não encontrado.");
+    }
+
+    std::vector<float> screen_window;
+    std::stringstream ss(screen_window_str);
+    float temp;
+
+    while (ss >> temp) {
+      screen_window.push_back(temp);
+    }
+
+    ps.insert("screen_window", screen_window);
+
+    return ps;
+  }
+
+  throw std::runtime_error("Tipo de camera não implementado.");
 }

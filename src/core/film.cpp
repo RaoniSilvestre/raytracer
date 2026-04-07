@@ -2,7 +2,6 @@
 #include "../lib/lodepng/lodepng.h"
 #include <fstream>
 #include <iostream>
-#include <memory>
 #include <sys/types.h>
 #include <vector>
 
@@ -52,9 +51,9 @@ void Film::export_image() {
   }
 }
 
-std::unique_ptr<Film> Film::make_film(const ParamSet &ps) {
-  int _x_res = ps.retrieve<int>("x_res");
-  int _y_res = ps.retrieve<int>("y_res");
+Film::Film(const ParamSet &ps) {
+  u_int32_t _x_res = ps.retrieve<u_int32_t>("x_res");
+  u_int32_t _y_res = ps.retrieve<u_int32_t>("y_res");
   std::string _type = ps.retrieve<std::string>("type");
   std::string _filename = ps.retrieve<std::string>("filename");
   std::string _img_type = ps.retrieve<std::string>("img_type");
@@ -62,5 +61,12 @@ std::unique_ptr<Film> Film::make_film(const ParamSet &ps) {
   std::cout << ">>> Film initialized: " << _x_res << "x" << _y_res
             << " target: " << _filename << std::endl;
 
-  return std::make_unique<Film>(_type, _img_type, _filename, _x_res, _y_res);
+  x_res = _x_res;
+  y_res = _y_res;
+  type = _type;
+  filename = _filename;
+  img_type = _img_type;
+
+  buffer.assign(static_cast<size_t>(y_res),
+                std::vector<Color>(static_cast<size_t>(x_res), Color{0, 0, 0}));
 }

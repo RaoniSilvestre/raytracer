@@ -1,5 +1,8 @@
+#pragma once
 
+#include "core/param_set.hpp"
 #include "math/vector_3.hpp"
+
 class LookAt {
 public:
   Vector3 look_from;
@@ -11,4 +14,6 @@ public:
     look_at = _look_at;
     up = _up;
   }
+
+  LookAt(const ParamSet &ps);
 };

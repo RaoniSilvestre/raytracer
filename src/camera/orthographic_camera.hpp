@@ -3,14 +3,17 @@
 #include "core/look_at.hpp"
 #include "math/vector_3.hpp"
 #include <memory>
+#include <utility>
+#include <vector>
 
 class OrthographicCamera : public Camera {
 public:
   Vector3 u, v, w;
   float bl, br, tl, tr;
 
-  OrthographicCamera(LookAt lookat, float sw[4], std::unique_ptr<Film> &_film)
-      : Camera(_film) {
+  OrthographicCamera(LookAt lookat, std::vector<float> sw,
+                     std::unique_ptr<Film> &_film)
+      : Camera(std::move(_film)) {
 
     bl = sw[0];
     br = sw[1];
@@ -25,4 +28,6 @@ public:
 
     v = cross(w, u);
   }
+
+  Ray generate_ray(int x, int y) override;
 };

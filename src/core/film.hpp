@@ -17,7 +17,7 @@ public:
   std::vector<std::vector<Color>> buffer;
 
   void export_image();
-  static std::unique_ptr<Film> make_film(const ParamSet &ps);
+  Film(const ParamSet &ps);
 
   Film(const std::string &t, const std::string &i_type,
        const std::string &fname, u_int32_t x, u_int32_t y) {

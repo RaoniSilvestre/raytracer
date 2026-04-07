@@ -1,4 +1,5 @@
 #include "app.hpp"
+#include "core/look_at.hpp"
 #include "core/param_set.hpp"
 #include "object_factory.hpp"
 #include "tinyxml2.h"
@@ -11,19 +12,6 @@
 
 std::unique_ptr<BackgroundColor> App::background = nullptr;
 std::unique_ptr<Camera> App::camera = nullptr;
-
-void App::process_tag(tinyxml2::XMLElement *element) {
-  std::string tag_name = element->Value();
-
-  auto it = dispatch_map.find(tag_name);
-  if (it != dispatch_map.end()) {
-    ParamSet ps = ObjectFactory::parse(element);
-
-    it->second(ps);
-  } else {
-    std::clog << "Unknown tag: " << tag_name << std::endl;
-  }
-}
 
 void App::parse(const RunningOptions &opts) {
   std::cout << "Lendo arquivo: " << opts.input << std::endl;
@@ -58,6 +46,15 @@ void App::parse(const RunningOptions &opts) {
   assert(camera_xml != nullptr);
   assert(film_xml != nullptr);
   assert(lookat_xml != nullptr);
+
+  auto film_ps = ObjectFactory::parse(film_xml);
+  auto camera_ps = ObjectFactory::parse(camera_xml);
+  auto lookat_ps = ObjectFactory::parse(lookat_xml);
+
+  auto film = std::make_unique<Film>(film_ps);
+  auto lookat = LookAt(lookat_ps);
+
+  camera = Camera::make_camera(camera_ps, std::move(film), lookat);
 
   auto iter = rt3_xml->FirstChildElement("world_begin")->NextSiblingElement();
 
@@ -95,7 +92,7 @@ void App::render() {
     const float y_proportion = float(i) / float(Y_RES);
     for (u_int32_t j = 0; j < X_RES; j++) {
       const float x_proportion = float(j) / float(X_RES);
-      camera->film->buffer[i][j] =
+      camera->film->buffer.at(i).at(j) =
           background->sampleUV(x_proportion, y_proportion);
     }
   }
