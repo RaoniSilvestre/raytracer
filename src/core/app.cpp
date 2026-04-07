@@ -24,7 +24,7 @@ void App::parse(const RunningOptions &opts) {
     return;
   }
 
-  std::cout << "Iniciando parsing" << std::endl;
+  std::cout << ">>> Iniciando parsing" << std::endl;
 
   auto rt3_xml = doc.RootElement();
 
@@ -33,15 +33,11 @@ void App::parse(const RunningOptions &opts) {
     return;
   }
 
-  std::cout << "Root: " << rt3_xml->Value() << std::endl;
+  std::cout << ">>> RootElement: " << rt3_xml->Value() << std::endl;
 
   auto film_xml = rt3_xml->FirstChildElement("film");
   auto camera_xml = rt3_xml->FirstChildElement("camera");
   auto lookat_xml = rt3_xml->FirstChildElement("lookat");
-
-  std::cout << "Film is null? " << (film_xml != nullptr) << std::endl;
-  std::cout << "camera is null? " << (camera_xml != nullptr) << std::endl;
-  std::cout << "lookat_xml is null? " << (lookat_xml != nullptr) << std::endl;
 
   assert(camera_xml != nullptr);
   assert(film_xml != nullptr);
@@ -92,6 +88,9 @@ void App::render() {
     const float y_proportion = float(i) / float(Y_RES);
     for (u_int32_t j = 0; j < X_RES; j++) {
       const float x_proportion = float(j) / float(X_RES);
+      auto ray = camera->generate_ray(i, j);
+
+      std::cout << ray << "\n";
       camera->film->buffer.at(i).at(j) =
           background->sampleUV(x_proportion, y_proportion);
     }

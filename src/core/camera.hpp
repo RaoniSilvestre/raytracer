@@ -3,10 +3,11 @@
 #include "core/param_set.hpp"
 #include "ray.hpp"
 #include <memory>
+#include <sys/types.h>
 
 class Camera {
 public:
-  virtual Ray generate_ray(int x, int y) = 0;
+  virtual Ray generate_ray(u_int32_t x, u_int32_t y) = 0;
   virtual ~Camera() = default;
 
   std::unique_ptr<Film> film;

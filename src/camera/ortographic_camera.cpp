@@ -2,12 +2,15 @@
 #include "math/vector_3.hpp"
 #include <iostream>
 
-Ray OrthographicCamera::generate_ray(int x, int y) {
-  std::cout << "Gerando raio para: " << x << ", " << y << std::endl;
+Ray OrthographicCamera::generate_ray(u_int32_t i, u_int32_t j) {
+  std::cout << "Gerando raio para: " << i << ", " << j << std::endl;
 
-  // Renomeamos para 'dir' e 'orig' para não conflitar com 'x' e 'y'
-  Vector3 dir = Vector3(1.0f, 2.0f, 3.0f);
-  Point3 orig = Point3{1.0f, 1.0f, 1.0f};
+  auto u_coord = l + (r - l) * (static_cast<float>(i) + 0.5f) /
+                         static_cast<float>(film->x_res);
+  auto v_coord = b + (t - b) * (static_cast<float>(j) + 0.5f) /
+                         static_cast<float>(film->y_res);
 
-  return Ray(orig, dir);
+  Point3 orig = origin + (u * u_coord) + (v * v_coord);
+
+  return Ray(orig, w);
 }
