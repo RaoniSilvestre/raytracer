@@ -89,10 +89,10 @@ void App::render() {
   const u_int32_t Y_RES = camera->film->y_res;
   const u_int32_t X_RES = camera->film->x_res;
 
-  auto s1 = Sphere(0.4f, Point3{-1, 0.5, 5});
-  auto s2 = Sphere(0.4f, Point3{1, -0.5, 8});
-  auto s3 = Sphere(0.4f, Point3{-1, -1.5, 3.5});
-  auto s4 = Sphere(0.4f, Point3{-1, 2, 4.5});
+  auto s1 = Sphere(0.4f, Point3{0, 1, 5});
+  auto s2 = Sphere(0.4f, Point3{1, 0, 100000});
+  // auto s3 = Sphere(0.4f, Point3{-1, -1.5, 3.5});
+  // auto s4 = Sphere(0.4f, Point3{-1, 2, 4.5});
 
   // <object type="sphere" radius="0.4" center="-1 0.5 5" />
   //       <object type="sphere" radius="0.4" center="1 -0.5 8" />
@@ -111,8 +111,9 @@ void App::render() {
         camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
       } else if (s2.intersect_p(ray)) {
         camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
-      } else if (s3.intersect_p(ray) || s4.intersect_p(ray)) {
-        camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
+      // } 
+      // else if (s3.intersect_p(ray) || s4.intersect_p(ray)) {
+        // camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
       } else {
         auto bg = background->sampleUV(x_proportion, y_proportion);
 

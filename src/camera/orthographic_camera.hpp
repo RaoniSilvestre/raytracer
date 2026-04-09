@@ -28,7 +28,7 @@ public:
     w = w_;
     u = unit_vector(cross(lookat.up, w));
 
-    v = cross(w, u);
+    v = cross(u, w);
   }
 
   Ray generate_ray(u_int32_t x, u_int32_t y) override;
