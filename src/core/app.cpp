@@ -1,6 +1,10 @@
 #include "app.hpp"
+#include "core/background_color.hpp"
+#include "core/film.hpp"
 #include "core/look_at.hpp"
 #include "core/param_set.hpp"
+#include "math/vector_3.hpp"
+#include "object/sphere.hpp"
 #include "object_factory.hpp"
 #include "tinyxml2.h"
 #include <cassert>
@@ -84,15 +88,36 @@ void App::render() {
   std::cout << ">>> Começando renderização\n";
   const u_int32_t Y_RES = camera->film->y_res;
   const u_int32_t X_RES = camera->film->x_res;
-  for (u_int32_t i = 0; i < Y_RES; i++) {
-    const float y_proportion = float(i) / float(Y_RES);
-    for (u_int32_t j = 0; j < X_RES; j++) {
-      const float x_proportion = float(j) / float(X_RES);
+
+  auto s1 = Sphere(0.4f, Point3{-1, 0.5, 5});
+  auto s2 = Sphere(0.4f, Point3{1, -0.5, 8});
+  auto s3 = Sphere(0.4f, Point3{-1, -1.5, 3.5});
+  auto s4 = Sphere(0.4f, Point3{-1, 2, 4.5});
+
+  // <object type="sphere" radius="0.4" center="-1 0.5 5" />
+  //       <object type="sphere" radius="0.4" center="1 -0.5 8" />
+  //       <object type="sphere" radius="0.4" center="-1 -1.5 3.5" />
+
+  for (u_int32_t j = Y_RES - 1; j > 0; j--) {
+    const float y_proportion = float(j) / float(Y_RES);
+    for (u_int32_t i = 0; i < X_RES; i++) {
+
+      const float x_proportion = float(i) / float(X_RES);
       auto ray = camera->generate_ray(i, j);
 
-      std::cout << ray << "\n";
-      camera->film->buffer.at(i).at(j) =
-          background->sampleUV(x_proportion, y_proportion);
+      auto p = Point2{i, j};
+
+      if (s1.intersect_p(ray)) {
+        camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
+      } else if (s2.intersect_p(ray)) {
+        camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
+      } else if (s3.intersect_p(ray) || s4.intersect_p(ray)) {
+        camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
+      } else {
+        auto bg = background->sampleUV(x_proportion, y_proportion);
+
+        camera->film->write(p, bg);
+      }
     }
   }
 }

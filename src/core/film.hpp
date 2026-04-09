@@ -7,6 +7,11 @@
 #include <sys/types.h>
 #include <vector>
 
+struct Point2 {
+  u_int32_t i;
+  u_int32_t j;
+};
+
 class Film {
 public:
   std::string type;
@@ -29,6 +34,8 @@ public:
     buffer.assign(static_cast<size_t>(y),
                   std::vector<Color>(static_cast<size_t>(x), Color{0, 0, 0}));
   }
+
+  void write(Point2 p, Color c);
 
 private:
   void export_ppm();

@@ -1,9 +1,7 @@
 #include "camera/orthographic_camera.hpp"
 #include "math/vector_3.hpp"
-#include <iostream>
 
 Ray OrthographicCamera::generate_ray(u_int32_t i, u_int32_t j) {
-  std::cout << "Gerando raio para: " << i << ", " << j << std::endl;
 
   auto u_coord = l + (r - l) * (static_cast<float>(i) + 0.5f) /
                          static_cast<float>(film->x_res);

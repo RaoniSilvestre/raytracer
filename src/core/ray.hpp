@@ -2,12 +2,11 @@
 #include <cmath>
 
 class Ray {
-private:
+public:
   Point3 origem;
   Vector3 direcao;
   mutable float start, end;
 
-public:
   Ray(const Point3 &o, const Vector3 &d, float s = 0, float e = INFINITY) {
     origem = o;
     direcao = d;

@@ -70,3 +70,5 @@ Film::Film(const ParamSet &ps) {
   buffer.assign(static_cast<size_t>(y_res),
                 std::vector<Color>(static_cast<size_t>(x_res), Color{0, 0, 0}));
 }
+
+void Film::write(Point2 p, Color c) { buffer.at(p.j).at(p.i) = c; }
