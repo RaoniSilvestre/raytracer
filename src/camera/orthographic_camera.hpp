@@ -10,9 +10,9 @@ class OrthographicCamera : public Camera {
 public:
   Vector3 u, v, w;
   Point3 origin;
-  float l, r, b, t;
+  double l, r, b, t;
 
-  OrthographicCamera(LookAt lookat, std::vector<float> sw,
+  OrthographicCamera(LookAt lookat, std::vector<double> sw,
                      std::unique_ptr<Film> &_film)
       : Camera(std::move(_film)) {
 
