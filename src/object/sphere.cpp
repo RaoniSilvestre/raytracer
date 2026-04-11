@@ -4,32 +4,32 @@
 #include <cmath>
 
 bool Sphere::intersect_p(const Ray &r) const {
-  auto o_c = r.origem - center;
-  auto d = r.direcao;
-
-  float a = dot(d, d); // d . d
-  float h = dot(o_c, d);
-  float c = dot(o_c, o_c) - radius * radius;
-
-  float delta = h * h - a * c;
-
+  Vector3 o_c = r.origem - center;
+  Vector3 d = r.direcao;
+  Vector3 d_hat = unit_vector(d);
+  double parallel_length = dot(o_c, d_hat);
+  Vector3 o_c_perp = o_c - parallel_length*d_hat;
+  double delta = radius*radius-(dot(o_c_perp, o_c_perp));
+  
   // Delta negativo significa que não intersecta.
   if (delta < 0) {
     return false;
   }
+  return true;
 
-  float sqrt_delta = sqrt(delta);
+  auto dd = dot(d, d);
+  auto o_cd = dot(o_c, d);
+  double sqrt_delta = sqrt(delta);
 
-  float t = (-h - sqrt_delta) / a;
+  double t = (-o_cd - sqrt_delta) / dd;
 
-  if (t < r.start || t > r.end) {
-    t = (-h + sqrt_delta) / a;
-    if (t < r.start || t > r.end) {
+  if (t < 0) {
+    t = (-o_cd + sqrt_delta) / dd;
+    if (t < 0) {
       return false;
     }
   }
 
-  return true;
 
   return true;
 }

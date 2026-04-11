@@ -6,15 +6,15 @@
 class Color {
 
 private:
-  static uint8_t map_to_255(float value) {
-    float clamped = std::clamp(value, 0.0f, 255.0f);
+  static uint8_t map_to_255(double value) {
+    double clamped = std::clamp(value, 0.0, 255.0);
     return static_cast<uint8_t>(std::lround(clamped));
   }
 
 public:
-  float red, green, blue;
+  double red, green, blue;
 
-  Color(float red, float green, float blue)
+  Color(double red, double green, double blue)
       : red(red), green(green), blue(blue) {}
 
   uint8_t red_int() const { return map_to_255(red); }
@@ -27,9 +27,9 @@ public:
     return os;
   }
   bool operator==(const Color &other) const {
-    const float epsilon = 0.001f;
+    const double epsilon = 0.001f;
 
-    auto is_near = [epsilon](float a, float b) {
+    auto is_near = [epsilon](double a, double b) {
       return std::abs(a - b) < epsilon;
     };
 

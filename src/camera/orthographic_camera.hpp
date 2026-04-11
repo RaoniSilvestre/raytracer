@@ -10,9 +10,9 @@ class OrthographicCamera : public Camera {
 public:
   Vector3 u, v, w;
   Point3 origin;
-  float l, r, b, t;
+  double l, r, b, t;
 
-  OrthographicCamera(LookAt lookat, std::vector<float> sw,
+  OrthographicCamera(LookAt lookat, std::vector<double> sw,
                      std::unique_ptr<Film> &_film)
       : Camera(std::move(_film)) {
 
@@ -28,7 +28,7 @@ public:
     w = w_;
     u = unit_vector(cross(lookat.up, w));
 
-    v = cross(w, u);
+    v = cross(u, w);
   }
 
   Ray generate_ray(u_int32_t x, u_int32_t y) override;

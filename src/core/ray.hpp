@@ -5,9 +5,9 @@ class Ray {
 public:
   Point3 origem;
   Vector3 direcao;
-  mutable float start, end;
+  mutable double start, end;
 
-  Ray(const Point3 &o, const Vector3 &d, float s = 0, float e = INFINITY) {
+  Ray(const Point3 &o, const Vector3 &d, double s = 0, double e = INFINITY) {
     origem = o;
     direcao = d;
     start = s;
@@ -24,8 +24,8 @@ public:
 
   Ray() : origem{0, 0, 0}, direcao{0, 0, 1}, start{0.f}, end{INFINITY} {}
 
-  Point3 operator()(float t) const { return origem + direcao * t; }
+  Point3 operator()(double t) const { return origem + direcao * t; }
 
-  float min_t() const { return start; }
-  float max_t() const { return end; }
+  double min_t() const { return start; }
+  double max_t() const { return end; }
 };

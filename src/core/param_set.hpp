@@ -11,7 +11,9 @@ private:
 
 public:
   ParamSet() = default;
-
+  /**
+  * @throws std::out_of_range if the key is not found
+  */
   template <typename T> const T &retrieve(const std::string &key) const {
     auto it = map.find(key);
     if (it == map.end()) {

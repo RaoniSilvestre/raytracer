@@ -180,9 +180,9 @@ ParamSet ObjectFactory::parseCamera(tinyxml2::XMLElement *tag) {
           "Screen window da câmera orthografica não encontrado.");
     }
 
-    std::vector<float> screen_window;
+    std::vector<double> screen_window;
     std::stringstream ss(screen_window_str);
-    float temp;
+    double temp;
 
     while (ss >> temp) {
       screen_window.push_back(temp);
@@ -192,6 +192,50 @@ ParamSet ObjectFactory::parseCamera(tinyxml2::XMLElement *tag) {
 
     return ps;
   }
+  else if(type == "perspective"){
+    ps.insert("type", type);
+    auto screen_window = tag->Attribute("screen_window");
+    auto fovyinput = tag->Attribute("fovy");
+    auto frame_aspectratio = tag->Attribute("frame_aspectratio");
+    
+    std::vector<double> screen_window_vec;
+    double fovy = 0.f;
+    double aspect_ratio = 0.f;
 
+    if(screen_window){
+      std::stringstream ss(screen_window);
+      double temp;
+      while(ss >> temp){
+        screen_window_vec.push_back(temp);
+      }
+      if(screen_window_vec.size() != 4){
+        screen_window = nullptr;
+      }
+      else{
+        ps.insert("screen_window", screen_window_vec);
+      }
+    }
+    if(fovyinput){
+      std::stringstream ss(fovyinput);
+      if(!(ss >> fovy)){
+        fovyinput = nullptr;
+      }
+      else{
+        ps.insert("fovy", fovy);
+        if(frame_aspectratio){
+          std::stringstream fa_ss(frame_aspectratio);
+          if(fa_ss >> aspect_ratio){
+            ps.insert("frame_aspectratio", aspect_ratio);
+          }
+        }
+      }
+    }
+    if(!screen_window && !fovyinput){
+      throw std::runtime_error("Fovy e Screen Window não foram encontrados");
+    }
+    
+    return ps;
+  
+  }
   throw std::runtime_error("Tipo de camera não implementado.");
 }

@@ -6,12 +6,12 @@ class Sphere : public Primitive {
 public:
   bool intersect_p(const Ray &r) const override;
 
-  Sphere(float r, Point3 c) {
+  Sphere(double r, Point3 c) {
     radius = r;
     center = c;
   };
 
 private:
-  float radius;
+  double radius;
   Point3 center;
 };

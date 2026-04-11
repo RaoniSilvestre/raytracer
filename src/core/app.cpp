@@ -8,6 +8,7 @@
 #include "object_factory.hpp"
 #include "tinyxml2.h"
 #include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -85,35 +86,42 @@ void App::parse(const RunningOptions &opts) {
 }
 
 void App::render() {
-  std::cout << ">>> Começando renderização\n";
   const u_int32_t Y_RES = camera->film->y_res;
   const u_int32_t X_RES = camera->film->x_res;
-
-  auto s1 = Sphere(0.4f, Point3{-1, 0.5, 5});
-  auto s2 = Sphere(0.4f, Point3{1, -0.5, 8});
-  auto s3 = Sphere(0.4f, Point3{-1, -1.5, 3.5});
-  auto s4 = Sphere(0.4f, Point3{-1, 2, 4.5});
+  std::cerr << ">>> Começando renderização\n"; 
+  
+  auto s1 = Sphere(0.2f, Point3{0.f, 1.f, 10000.f});
+  auto s2 = Sphere(0.2f, Point3{-1.f, 0., 10000.f});
+  auto s3 = Sphere(0.2f, Point3{1.f, 0., 10000.f});
+  auto s4 = Sphere(0.2f, Point3{0.f, -1.f, 10000.f});
+  auto s5 = Sphere(0.2f, Point3{0.f, 0.f, 9000.f});
+  // auto s3 = Sphere(0.4f, Point3{-1, -1.5, 3.5});
+  // auto s4 = Sphere(0.4f, Point3{-1, 2, 4.5});
 
   // <object type="sphere" radius="0.4" center="-1 0.5 5" />
   //       <object type="sphere" radius="0.4" center="1 -0.5 8" />
   //       <object type="sphere" radius="0.4" center="-1 -1.5 3.5" />
 
-  for (u_int32_t j = Y_RES - 1; j > 0; j--) {
-    const float y_proportion = float(j) / float(Y_RES);
-    for (u_int32_t i = 0; i < X_RES; i++) {
-
-      const float x_proportion = float(i) / float(X_RES);
+  for (int64_t j_ = Y_RES - 1; j_ >= 0; j_--) {
+    u_int32_t j = static_cast<u_int32_t>(j_);
+    const double y_proportion = double(j) / double(Y_RES);
+    for (u_int32_t i = 0; i < X_RES; i++) { 
+      const double x_proportion = double(i) / double(X_RES);
       auto ray = camera->generate_ray(i, j);
-
+      // std::cerr << "origin: " << ray.origem << " direction: " << ray.direcao << " i, j: " << i << ", " << j << " ";  
       auto p = Point2{i, j};
 
       if (s1.intersect_p(ray)) {
+        // std::cerr << "interceptado" << std::endl;
         camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
       } else if (s2.intersect_p(ray)) {
+        // std::cerr << "interceptado" << std::endl;
         camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
-      } else if (s3.intersect_p(ray) || s4.intersect_p(ray)) {
+      } 
+      else if (s3.intersect_p(ray) || s4.intersect_p(ray) || s5.intersect_p(ray)) {
         camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
       } else {
+        // std::cout << std::endl;
         auto bg = background->sampleUV(x_proportion, y_proportion);
 
         camera->film->write(p, bg);

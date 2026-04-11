@@ -1,7 +1,7 @@
 <RT3>
     <lookat look_from="0 0 0" look_at="0 0 10" up="0 1 0" />
-    <camera type="orthographic" screen_window="-5.3 5.3 -4 4"/>
-    <film type="image" w_res="6000" h_res="6000" filename="simple_bkg.png" img_type="png" />
+    <camera type="orthographic" screen_window="-5.3 5.3 -5.3 5.3"/>
+    <film type="image" w_res="1000" h_res="1000" filename="ortographic.png" img_type="png" />
     <integrator type="flat" />
     <world_begin/>
         <background type="single_color" color="153 204 255"/>

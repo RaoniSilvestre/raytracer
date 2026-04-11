@@ -19,6 +19,6 @@ Color Color::parseColorString(const char *color_str) {
     throw std::runtime_error("Valores de cor fora do intervalo [0, 255].");
   }
 
-  return Color{static_cast<float>(r), static_cast<float>(g),
-               static_cast<float>(b)};
+  return Color{static_cast<double>(r), static_cast<double>(g),
+               static_cast<double>(b)};
 }
