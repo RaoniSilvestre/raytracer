@@ -6,30 +6,26 @@
 bool Sphere::intersect_p(const Ray &r) const {
   Vector3 o_c = r.origem - center;
   Vector3 d = r.direcao;
-  Vector3 d_hat = unit_vector(d);
-  double parallel_length = dot(o_c, d_hat);
-  Vector3 o_c_perp = o_c - parallel_length*d_hat;
-  double delta = radius*radius-(dot(o_c_perp, o_c_perp));
-  
-  // Delta negativo significa que não intersecta.
-  if (delta < 0) {
+
+  auto a = dot(d, d);
+  auto half_b = dot(o_c, d);
+  auto c = dot(o_c, o_c) - radius * radius;
+
+  double discriminant = half_b * half_b - a * c;
+
+  if (discriminant < 0) {
     return false;
   }
-  return true;
 
-  auto dd = dot(d, d);
-  auto o_cd = dot(o_c, d);
-  double sqrt_delta = sqrt(delta);
-
-  double t = (-o_cd - sqrt_delta) / dd;
+  double sqrtd = sqrt(discriminant);
+  double t = (-half_b - sqrtd) / a;
 
   if (t < 0) {
-    t = (-o_cd + sqrt_delta) / dd;
+    t = (-half_b + sqrtd) / a;
     if (t < 0) {
       return false;
     }
   }
-
 
   return true;
 }
