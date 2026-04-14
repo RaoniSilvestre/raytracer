@@ -14,10 +14,7 @@
 #include <string>
 #include <sys/types.h>
 
-std::unique_ptr<BackgroundColor> App::background = nullptr;
-std::unique_ptr<Camera> App::camera = nullptr;
-
-void App::parse(const RunningOptions &opts) {
+void App::parse(const RunningOptions &opts, Scene &scene) {
   std::cout << "Lendo arquivo: " << opts.input << std::endl;
   tinyxml2::XMLDocument doc;
 
@@ -54,7 +51,7 @@ void App::parse(const RunningOptions &opts) {
   auto film = std::make_unique<Film>(film_ps);
   auto lookat = LookAt(lookat_ps);
 
-  camera = Camera::make_camera(camera_ps, std::move(film), lookat);
+  scene.camera = Camera::make_camera(camera_ps, std::move(film), lookat);
 
   auto iter = rt3_xml->FirstChildElement("world_begin")->NextSiblingElement();
 
@@ -75,7 +72,7 @@ void App::parse(const RunningOptions &opts) {
     if (it != dispatch_map.end()) {
       ParamSet ps = ObjectFactory::parse(iter);
 
-      it->second(ps);
+      it->second(ps, scene);
     } else {
       std::cout << ">>> Tag desconhecida: " << tag_name << std::endl;
     }
@@ -84,53 +81,42 @@ void App::parse(const RunningOptions &opts) {
   }
 }
 
-void App::render() {
-  const int Y_RES = static_cast<int>(camera->film->y_res);
-  const int X_RES = static_cast<int>(camera->film->x_res);
+void App::render(const Scene &scene) {
+  const int Y_RES = static_cast<int>(scene.camera->film->y_res);
+  const int X_RES = static_cast<int>(scene.camera->film->x_res);
   std::cerr << ">>> Começando renderização\n";
 
-  auto s1 = Sphere(0.4, Point3{-1, 0.5, 5});
-  auto s2 = Sphere(0.4, Point3{1, -0.5, 8});
-  auto s3 = Sphere(0.4, Point3{-1, -1.5, 3.5});
-
   for (int j = Y_RES - 1; j >= 0; j--) {
-    const double y_proportion = (double(j)) / double(Y_RES);
+    const double y_proportion = (double(j) + 0.5) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {
-      const double x_proportion = (double(i)) / double(X_RES);
-      auto ray = camera->generate_ray(static_cast<u_int32_t>(i),
-                                      static_cast<u_int32_t>(j));
+      const double x_proportion = (double(i) + 0.5) / double(X_RES);
+      auto ray = scene.camera->generate_ray(static_cast<u_int32_t>(i),
+                                            static_cast<u_int32_t>(j));
       auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};
 
-      if (s1.intersect_p(ray) || s2.intersect_p(ray) || s3.intersect_p(ray)) {
-        camera->film->write(p, Color{255.0f, 0.0f, 0.0f});
-      } else {
-        auto bg = background->sampleUV(x_proportion, y_proportion);
+      bool hit = false;
+      Color hit_color{0.0f, 0.0f, 0.0f};
+      for (const auto &obj : scene.objects) {
+        if (obj->intersect_p(ray)) {
+          hit = true;
+          hit_color = obj->get_material()->color;
+          break;
+        }
+      }
 
-        camera->film->write(p, bg);
+      if (hit) {
+        scene.camera->film->write(p, hit_color);
+      } else {
+        auto bg = scene.background->sampleUV(x_proportion, y_proportion);
+        scene.camera->film->write(p, bg);
       }
     }
   }
 }
 
 void App::run(const RunningOptions &opts) {
-  App::parse(opts);
-  App::render();
-  camera->film->export_image();
-}
-
-void App::make_background(const ParamSet &ps) {
-  if (ps.has("color")) {
-    Color c = ps.retrieve<Color>("color");
-    App::background = std::make_unique<BackgroundColor>(c, c, c, c);
-    std::cout << ">>> Background Solid Color initialized." << std::endl;
-  } else {
-    Color bl = ps.retrieve<Color>("bl");
-    Color tl = ps.retrieve<Color>("tl");
-    Color tr = ps.retrieve<Color>("tr");
-    Color br = ps.retrieve<Color>("br");
-
-    App::background = std::make_unique<BackgroundColor>(bl, br, tl, tr);
-    std::cout << ">>> Background 4-Colors Interpolated initialized."
-              << std::endl;
-  }
+  Scene scene;
+  App::parse(opts, scene);
+  App::render(scene);
+  scene.camera->film->export_image();
 }

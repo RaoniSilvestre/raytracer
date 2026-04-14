@@ -106,15 +106,14 @@ ParamSet ObjectFactory::parseBackground(tinyxml2::XMLElement *tag) {
     throw std::runtime_error("Tipo de background vazio.");
   }
 
-  // Multiplas cores!
-  if (type_attr == "colors") {
+  if (type_attr == "4_colors") {
     const char *bl = tag->Attribute("bl");
     const char *tl = tag->Attribute("tl");
     const char *tr = tag->Attribute("tr");
     const char *br = tag->Attribute("br");
 
     if (bl && tl && tr && br) {
-      ps.insert("type", "colors");
+      ps.insert("type", "4_colors");
       ps.insert("bl", Color::parseColorString(bl));
       ps.insert("tl", Color::parseColorString(tl));
       ps.insert("tr", Color::parseColorString(tr));
@@ -191,51 +190,95 @@ ParamSet ObjectFactory::parseCamera(tinyxml2::XMLElement *tag) {
     ps.insert("screen_window", screen_window);
 
     return ps;
-  }
-  else if(type == "perspective"){
+  } else if (type == "perspective") {
     ps.insert("type", type);
     auto screen_window = tag->Attribute("screen_window");
     auto fovyinput = tag->Attribute("fovy");
     auto frame_aspectratio = tag->Attribute("frame_aspectratio");
-    
+
     std::vector<double> screen_window_vec;
     double fovy = 0.f;
     double aspect_ratio = 0.f;
 
-    if(screen_window){
+    if (screen_window) {
       std::stringstream ss(screen_window);
       double temp;
-      while(ss >> temp){
+      while (ss >> temp) {
         screen_window_vec.push_back(temp);
       }
-      if(screen_window_vec.size() != 4){
+      if (screen_window_vec.size() != 4) {
         screen_window = nullptr;
-      }
-      else{
+      } else {
         ps.insert("screen_window", screen_window_vec);
       }
     }
-    if(fovyinput){
+    if (fovyinput) {
       std::stringstream ss(fovyinput);
-      if(!(ss >> fovy)){
+      if (!(ss >> fovy)) {
         fovyinput = nullptr;
-      }
-      else{
+      } else {
         ps.insert("fovy", fovy);
-        if(frame_aspectratio){
+        if (frame_aspectratio) {
           std::stringstream fa_ss(frame_aspectratio);
-          if(fa_ss >> aspect_ratio){
+          if (fa_ss >> aspect_ratio) {
             ps.insert("frame_aspectratio", aspect_ratio);
           }
         }
       }
     }
-    if(!screen_window && !fovyinput){
+    if (!screen_window && !fovyinput) {
       throw std::runtime_error("Fovy e Screen Window não foram encontrados");
     }
-    
+
     return ps;
-  
   }
   throw std::runtime_error("Tipo de camera não implementado.");
+}
+
+ParamSet ObjectFactory::parseSphere(tinyxml2::XMLElement *tag) {
+
+  auto type = tag->Attribute("type");
+  if (!type) {
+    throw std::runtime_error("Tipo de objeto não encontrado");
+  }
+
+  auto type_ = std::string(type);
+
+  if (type_ != "sphere") {
+    throw std::runtime_error("Objeto não parseavel");
+  }
+  auto radius_raw = tag->Attribute("radius");
+  auto center_raw = tag->Attribute("center");
+
+  ParamSet ps;
+
+  if (!radius_raw || !center_raw) {
+    throw std::runtime_error("Sphere sem centro ou raio.");
+  }
+
+  auto center = parseSingleString(center_raw);
+  double radius = std::stod(radius_raw);
+
+  ps.insert("radius", radius);
+  ps.insert("center", center);
+
+  return ps;
+}
+
+ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
+  ParamSet ps;
+  auto type_raw = tag->Attribute("type");
+  auto color_raw = tag->Attribute("color");
+
+  if (!type_raw || !color_raw) {
+    throw std::runtime_error("Material sem cor ou tipo válido");
+  }
+
+  auto type = std::string(type_raw);
+  auto color = Color::parseColorString(color_raw);
+
+  ps.insert("type", type);
+  ps.insert("color", color);
+
+  return ps;
 }

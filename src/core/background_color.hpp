@@ -1,6 +1,9 @@
 #pragma once
 
-#include "color.hpp"
+#include "core/color.hpp"
+#include "core/param_set.hpp"
+
+class Scene;
 
 class BackgroundColor {
 private:
@@ -12,4 +15,5 @@ public:
   BackgroundColor(Color bl, Color br, Color tl, Color tr);
   ~BackgroundColor() = default;
   Color sampleUV(double u, double v) const;
+  static void make_background(const ParamSet &ps, Scene &scene);
 };

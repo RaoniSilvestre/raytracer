@@ -1,6 +1,8 @@
-#include "core/app.hpp"
+#include "core/material.hpp"
+#include "core/param_set.hpp"
 #include "core/primitive.hpp"
 #include "math/vector_3.hpp"
+#include <memory>
 
 class Sphere : public Primitive {
 public:
@@ -10,6 +12,8 @@ public:
     radius = r;
     center = c;
   };
+
+  Sphere(const ParamSet &ps, std::shared_ptr<Material> m);
 
 private:
   double radius;

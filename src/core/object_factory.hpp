@@ -12,14 +12,21 @@ public:
   static ParamSet parse(tinyxml2::XMLElement *tag);
 
 private:
-  static ParamSet parseFilm(tinyxml2::XMLElement *object);
-  static ParamSet parseBackground(tinyxml2::XMLElement *object);
-  static ParamSet parseLookAt(tinyxml2::XMLElement *object);
-  static ParamSet parseCamera(tinyxml2::XMLElement *object);
+  static ParamSet parseFilm(tinyxml2::XMLElement *tag);
+  static ParamSet parseBackground(tinyxml2::XMLElement *tag);
+  static ParamSet parseLookAt(tinyxml2::XMLElement *tag);
+  static ParamSet parseCamera(tinyxml2::XMLElement *tag);
+  static ParamSet parseSphere(tinyxml2::XMLElement *tag);
+  static ParamSet parseMaterial(tinyxml2::XMLElement *tag);
 
   static inline const std::unordered_map<std::string, TagParser>
-      param_set_parser_map = {{"background", &ObjectFactory::parseBackground},
-                              {"film", &ObjectFactory::parseFilm},
-                              {"lookat", &ObjectFactory::parseLookAt},
-                              {"camera", &ObjectFactory::parseCamera}};
+      param_set_parser_map = {
+          {"background", &ObjectFactory::parseBackground},
+          {"film", &ObjectFactory::parseFilm},
+          {"lookat", &ObjectFactory::parseLookAt},
+          {"camera", &ObjectFactory::parseCamera},
+          {"object", &ObjectFactory::parseSphere},
+          {"material", &ObjectFactory::parseMaterial},
+
+  };
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "core/film.hpp"
 #include "core/look_at.hpp"
 #include "core/param_set.hpp"

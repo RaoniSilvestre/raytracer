@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../math/vector_3.hpp"
 #include <cmath>
 
