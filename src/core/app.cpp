@@ -86,9 +86,9 @@ void App::render(const Scene &scene) {
   std::cerr << ">>> Começando renderização\n";
 
   for (int j = Y_RES - 1; j >= 0; j--) {
-    const double y_proportion = (double(j) + 0.5) / double(Y_RES);
+    const double y_proportion = double(j) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {
-      const double x_proportion = (double(i) + 0.5) / double(X_RES);
+      const double x_proportion = double(i) / double(X_RES);
       auto ray = scene.camera->generate_ray(static_cast<u_int32_t>(i),
                                             static_cast<u_int32_t>(j));
       auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};
