@@ -3,7 +3,6 @@
 #include "core/film.hpp"
 #include "core/look_at.hpp"
 #include "core/param_set.hpp"
-#include "math/vector_3.hpp"
 #include "object/sphere.hpp"
 #include "object_factory.hpp"
 #include "tinyxml2.h"
