@@ -104,7 +104,7 @@ inline double dot(const Vector3 &v1, const Vector3 &v2) {
 }
 
 /* Left handed cross product */
-inline Vector3 cross( const Vector3 &v2, const Vector3 &v1) {
+inline Vector3 cross(const Vector3 &v2, const Vector3 &v1) {
   return Vector3(v2.e[1] * v1.e[2] - v2.e[2] * v1.e[1],
                  v2.e[2] * v1.e[0] - v2.e[0] * v1.e[2],
                  v2.e[0] * v1.e[1] - v2.e[1] * v1.e[0]);

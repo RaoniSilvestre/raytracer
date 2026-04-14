@@ -22,13 +22,10 @@ public:
     t = sw[3];
 
     origin = lookat.look_from;
-    Vector3 w_ = lookat.look_at - lookat.look_from;
-    w_.make_unit_vector();
 
-    w = w_;
+    w = unit_vector(lookat.look_at - lookat.look_from);
     u = unit_vector(cross(lookat.up, w));
-
-    v = cross(u, w);
+    v = unit_vector(cross(w, u));
   }
 
   Ray generate_ray(u_int32_t x, u_int32_t y) override;

@@ -29,7 +29,7 @@ public:
 
     m_w = unit_vector(lookat.look_at - lookat.look_from);
     m_u = unit_vector(cross(lookat.up, m_w));
-    m_v = unit_vector(cross(m_u, m_w));
+    m_v = unit_vector(cross(m_w, m_u));
   }
 
   Ray generate_ray(u_int32_t x, u_int32_t y) override;

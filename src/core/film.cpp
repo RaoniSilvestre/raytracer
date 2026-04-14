@@ -27,7 +27,7 @@ bool Film::export_png() {
   std::vector<unsigned char> export_buffer;
   export_buffer.reserve(X_RES * Y_RES * 4);
 
-  for (u_int32_t i = 0; i < Y_RES; i++) {
+  for (u_int32_t i = Y_RES - 1; i >= 0 && i < 1000000; i--) {
     for (u_int32_t j = 0; j < X_RES; j++) {
       export_buffer.push_back(this->buffer[i][j].red_int());
       export_buffer.push_back(this->buffer[i][j].green_int());
