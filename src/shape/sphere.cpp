@@ -1,11 +1,8 @@
 
-#include "object/sphere.hpp"
-#include "core/material.hpp"
+#include "shape/sphere.hpp"
 #include "core/param_set.hpp"
 #include "math/vector_3.hpp"
 #include <cmath>
-#include <memory>
-#include <utility>
 
 bool Sphere::intersect_p(const Ray &r) const {
   Vector3 o_c = r.origem - center;
@@ -34,11 +31,10 @@ bool Sphere::intersect_p(const Ray &r) const {
   return true;
 }
 
-Sphere::Sphere(const ParamSet &ps, std::shared_ptr<Material> m) {
+Sphere::Sphere(const ParamSet &ps) {
   auto r = ps.retrieve<double>("radius");
   auto c = ps.retrieve<Point3>("center");
 
   radius = r;
   center = c;
-  material = std::move(m);
 }

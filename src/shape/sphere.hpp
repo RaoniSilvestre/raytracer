@@ -1,10 +1,11 @@
-#include "core/material.hpp"
-#include "core/param_set.hpp"
-#include "core/primitive.hpp"
-#include "math/vector_3.hpp"
-#include <memory>
+// shape/sphere.hpp
+#pragma once
 
-class Sphere : public Primitive {
+#include "core/param_set.hpp"
+#include "core/shape.hpp"
+#include "math/vector_3.hpp"
+
+class Sphere : public Shape {
 public:
   bool intersect_p(const Ray &r) const override;
 
@@ -13,7 +14,7 @@ public:
     center = c;
   };
 
-  Sphere(const ParamSet &ps, std::shared_ptr<Material> m);
+  Sphere(const ParamSet &ps);
 
 private:
   double radius;
