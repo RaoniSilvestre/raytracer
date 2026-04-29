@@ -9,6 +9,8 @@ class Sphere : public Shape {
 public:
   bool intersect_p(const Ray &r) const override;
 
+  bool intersect(const Ray &r, Surfel *s) const override;
+  
   Sphere(double r, Point3 c) {
     radius = r;
     center = c;

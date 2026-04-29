@@ -16,7 +16,6 @@ public:
 
   Camera(std::unique_ptr<Film> _film) : film(std::move(_film)) {}
 
-  Camera(const ParamSet &ps, Film film, LookAt lookat);
   static std::unique_ptr<Camera>
   make_camera(const ParamSet &ps, std::unique_ptr<Film> film, LookAt lookat);
 };

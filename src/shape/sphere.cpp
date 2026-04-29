@@ -17,6 +17,23 @@ bool Sphere::intersect_p(const Ray &r) const {
   if (discriminant < 0) {
     return false;
   }
+  return true;
+}
+
+bool Sphere::intersect(const Ray &r, [[maybe_unused]]Surfel *s) const {
+  s = nullptr;
+  Vector3 o_c = r.origem - center;
+  Vector3 d = r.direcao;
+
+  auto a = dot(d, d);
+  auto half_b = dot(o_c, d);
+  auto c = dot(o_c, o_c) - radius * radius;
+
+  double discriminant = half_b * half_b - a * c;
+
+  if (discriminant < 0) {
+    return false;
+  }
 
   double sqrtd = sqrt(discriminant);
   double t = (-half_b - sqrtd) / a;
@@ -28,6 +45,8 @@ bool Sphere::intersect_p(const Ray &r) const {
     }
   }
 
+  Point3 hit_point = r(t);
+  s = new Surfel(hit_point, this->center-hit_point, -r.direcao);
   return true;
 }
 

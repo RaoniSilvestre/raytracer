@@ -7,7 +7,10 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-
+/**
+  Returns a ParamSet with the fields inside the XML element
+  throws runtime_error with an invalid XML element
+ */
 ParamSet ObjectFactory::parse(tinyxml2::XMLElement *tag) {
   if (!tag) {
     throw std::runtime_error("Tag XML nula fornecida ao parser.");
@@ -280,5 +283,14 @@ ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
   ps.insert("type", type);
   ps.insert("color", color);
 
+  return ps;
+}
+
+ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag){
+  ParamSet ps;
+  std::string integratortype = tag->Attribute("type");
+
+  ps.insert("type", integratortype);
+  
   return ps;
 }

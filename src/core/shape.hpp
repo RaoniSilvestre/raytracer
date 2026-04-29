@@ -11,6 +11,8 @@ public:
 
   static void make_object(const ParamSet &ps, Scene &scene);
 
+  virtual bool intersect(const Ray &r, Surfel *s) const = 0;
+  
   virtual bool intersect_p(const Ray &r) const = 0;
 
 protected:

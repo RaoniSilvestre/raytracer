@@ -13,4 +13,6 @@ public:
         color(ps.retrieve<Color>("color")) {}
 
   static void make_material(const ParamSet &ps, Scene &s);
+  static void make_new_named_material(const ParamSet &ps, Scene &s);
+  static void process_named_material(const ParamSet &ps, Scene &s);
 };

@@ -18,6 +18,7 @@ private:
   static ParamSet parseCamera(tinyxml2::XMLElement *tag);
   static ParamSet parseSphere(tinyxml2::XMLElement *tag);
   static ParamSet parseMaterial(tinyxml2::XMLElement *tag);
+  static ParamSet parseIntegrator(tinyxml2::XMLElement *tag);
 
   static inline const std::unordered_map<std::string, TagParser>
       param_set_parser_map = {
@@ -25,6 +26,7 @@ private:
           {"film", &ObjectFactory::parseFilm},
           {"lookat", &ObjectFactory::parseLookAt},
           {"camera", &ObjectFactory::parseCamera},
+          {"integrator", &ObjectFactory::parseIntegrator},
           {"object", &ObjectFactory::parseSphere},
           {"material", &ObjectFactory::parseMaterial},
 

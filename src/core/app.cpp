@@ -1,5 +1,6 @@
 #include "app.hpp"
 #include "core/background_color.hpp"
+#include "core/integrator.hpp"
 #include "core/film.hpp"
 #include "core/look_at.hpp"
 #include "core/param_set.hpp"
@@ -8,11 +9,12 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <sys/types.h>
 
-void App::parse(const RunningOptions &opts, Scene &scene) {
+void App::parse(const RunningOptions &opts, Scene &scene, Integrator &integrator) {
   std::cout << "Lendo arquivo: " << opts.input << std::endl;
   tinyxml2::XMLDocument doc;
 
@@ -37,20 +39,24 @@ void App::parse(const RunningOptions &opts, Scene &scene) {
   auto film_xml = rt3_xml->FirstChildElement("film");
   auto camera_xml = rt3_xml->FirstChildElement("camera");
   auto lookat_xml = rt3_xml->FirstChildElement("lookat");
+  auto integrator_xml = rt3_xml->FirstChildElement("integrator");
 
   assert(camera_xml != nullptr);
   assert(film_xml != nullptr);
   assert(lookat_xml != nullptr);
+  assert(integrator_xml != nullptr);
 
   auto film_ps = ObjectFactory::parse(film_xml);
   auto camera_ps = ObjectFactory::parse(camera_xml);
   auto lookat_ps = ObjectFactory::parse(lookat_xml);
+  auto integrator_ps = ObjectFactory::parse(lookat_xml);
 
   auto film = std::make_unique<Film>(film_ps);
   auto lookat = LookAt(lookat_ps);
+  
+  integrator.camera = Camera::make_camera(camera_ps, std::move(film), lookat);
 
-  scene.camera = Camera::make_camera(camera_ps, std::move(film), lookat);
-
+  
   auto iter = rt3_xml->FirstChildElement("world_begin")->NextSiblingElement();
 
   assert(iter != nullptr);
@@ -79,34 +85,26 @@ void App::parse(const RunningOptions &opts, Scene &scene) {
   }
 }
 
-void App::render(const Scene &scene) {
-  const int Y_RES = static_cast<int>(scene.camera->film->y_res);
-  const int X_RES = static_cast<int>(scene.camera->film->x_res);
+void App::render(const Scene &scene, const Integrator &integrator){
+  const int Y_RES = static_cast<int>(integrator.camera->film->y_res);
+  const int X_RES = static_cast<int>(integrator.camera->film->x_res);
   std::cerr << ">>> Começando renderização\n";
 
   for (int j = Y_RES - 1; j >= 0; j--) {
     const double y_proportion = double(j) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {
       const double x_proportion = double(i) / double(X_RES);
-      auto ray = scene.camera->generate_ray(static_cast<u_int32_t>(i),
+      auto ray = integrator.camera->generate_ray(static_cast<u_int32_t>(i),
                                             static_cast<u_int32_t>(j));
       auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};
-
-      bool hit = false;
-      Color hit_color{0.0f, 0.0f, 0.0f};
-      for (const auto &obj : scene.objects) {
-        if (obj->intersect_p(ray)) {
-          hit = true;
-          hit_color = obj->get_material()->color;
-          break;
-        }
-      }
-
+      
+      std::optional<Color> hit = integrator.li(ray, scene);
+      
       if (hit) {
-        scene.camera->film->write(p, hit_color);
+        integrator.camera->film->write(p, *hit);
       } else {
         auto bg = scene.background->sampleUV(x_proportion, y_proportion);
-        scene.camera->film->write(p, bg);
+        integrator.camera->film->write(p, bg);
       }
     }
   }
@@ -114,7 +112,8 @@ void App::render(const Scene &scene) {
 
 void App::run(const RunningOptions &opts) {
   Scene scene;
-  App::parse(opts, scene);
-  App::render(scene);
-  scene.camera->film->export_image();
+  Integrator integrator;
+  App::parse(opts, scene, integrator);
+  App::render(scene, integrator);
+  integrator.camera->film->export_image();
 }
