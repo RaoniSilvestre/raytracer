@@ -3,9 +3,11 @@
 #include "core/param_set.hpp"
 #include "core/ray.hpp"
 #include "core/surfel.hpp"
+#include <optional>
 
 
 class Surfel;
+
 class Primitive {
 public:
   virtual ~Primitive() = default;
@@ -13,7 +15,7 @@ public:
   static void make_object(const ParamSet &ps, Scene &scene);
 
   virtual bool intersect_p(const Ray &r) const = 0;
-  virtual bool intersect(const Ray &r, Surfel *s);
-  virtual const Material *get_material();
+  virtual std::optional<Surfel> intersect(const Ray &r) const = 0;
+  virtual const Material *get_material() = 0;
 
 };

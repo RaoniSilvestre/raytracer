@@ -1,8 +1,10 @@
 
 #include "shape/sphere.hpp"
 #include "core/param_set.hpp"
+#include "core/surfel.hpp"
 #include "math/vector_3.hpp"
 #include <cmath>
+#include <optional>
 
 bool Sphere::intersect_p(const Ray &r) const {
   Vector3 o_c = r.origem - center;
@@ -20,8 +22,8 @@ bool Sphere::intersect_p(const Ray &r) const {
   return true;
 }
 
-bool Sphere::intersect(const Ray &r, [[maybe_unused]]Surfel *s) const {
-  s = nullptr;
+std::optional<Surfel> Sphere::intersect(const Ray &r) const {
+  std::optional<Surfel> s = std::nullopt;
   Vector3 o_c = r.origem - center;
   Vector3 d = r.direcao;
 
@@ -32,7 +34,7 @@ bool Sphere::intersect(const Ray &r, [[maybe_unused]]Surfel *s) const {
   double discriminant = half_b * half_b - a * c;
 
   if (discriminant < 0) {
-    return false;
+    return s;
   }
 
   double sqrtd = sqrt(discriminant);
@@ -41,13 +43,13 @@ bool Sphere::intersect(const Ray &r, [[maybe_unused]]Surfel *s) const {
   if (t < 0) {
     t = (-half_b + sqrtd) / a;
     if (t < 0) {
-      return false;
+      return s;
     }
   }
 
   Point3 hit_point = r(t);
-  s = new Surfel(hit_point, this->center-hit_point, -r.direcao);
-  return true;
+  s = {hit_point, this->center-hit_point, -r.direcao};
+  return s;
 }
 
 Sphere::Sphere(const ParamSet &ps) {

@@ -8,7 +8,7 @@
 */
 std::optional<Color> FlatIntegrator::li(const Ray& ray, const Scene &scene) const {
       std::optional<Color> c = std::nullopt;
-
+    
       for (const auto &obj : scene.objects) {
         if (obj->intersect_p(ray)) {
           c = obj->get_material()->color;

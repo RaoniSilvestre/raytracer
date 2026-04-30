@@ -16,7 +16,7 @@ private:
   static ParamSet parseBackground(tinyxml2::XMLElement *tag);
   static ParamSet parseLookAt(tinyxml2::XMLElement *tag);
   static ParamSet parseCamera(tinyxml2::XMLElement *tag);
-  static ParamSet parseSphere(tinyxml2::XMLElement *tag);
+  static ParamSet parseObject(tinyxml2::XMLElement *tag);
   static ParamSet parseMaterial(tinyxml2::XMLElement *tag);
   static ParamSet parseIntegrator(tinyxml2::XMLElement *tag);
 
@@ -27,7 +27,7 @@ private:
           {"lookat", &ObjectFactory::parseLookAt},
           {"camera", &ObjectFactory::parseCamera},
           {"integrator", &ObjectFactory::parseIntegrator},
-          {"object", &ObjectFactory::parseSphere},
+          {"object", &ObjectFactory::parseObject},
           {"material", &ObjectFactory::parseMaterial},
 
   };

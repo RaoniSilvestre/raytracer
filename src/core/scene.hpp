@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/background_color.hpp"
-#include "core/camera.hpp"
 #include "core/primitive.hpp"
 #include <memory>
 #include <vector>

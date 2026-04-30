@@ -42,6 +42,13 @@ public:
     ValueType<T> value_obj = ValueType<T>(obj);
     map[key] = std::make_shared<ValueType<T>>(value_obj);
   }
-
+  friend std::ostream& operator<<(std::ostream& os, const ParamSet &p){
+    os << "Paramset Keys = { ";
+    for(auto a :p.map){
+      os << a.first << ", ";
+    }
+    os << "}";
+    return os;
+  }
   bool empty() { return this->map.empty(); }
 };

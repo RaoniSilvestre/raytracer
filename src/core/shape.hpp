@@ -4,14 +4,14 @@
 #include "core/param_set.hpp"
 #include "core/ray.hpp"
 #include "core/scene.hpp"
+#include "core/surfel.hpp"
+#include <optional>
 
 class Shape {
 public:
   virtual ~Shape() = default;
 
-  static void make_object(const ParamSet &ps, Scene &scene);
-
-  virtual bool intersect(const Ray &r, Surfel *s) const = 0;
+  virtual std::optional<Surfel> intersect(const Ray &r) const = 0;
   
   virtual bool intersect_p(const Ray &r) const = 0;
 

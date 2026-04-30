@@ -238,35 +238,38 @@ ParamSet ObjectFactory::parseCamera(tinyxml2::XMLElement *tag) {
   throw std::runtime_error("Tipo de camera não implementado.");
 }
 
-ParamSet ObjectFactory::parseSphere(tinyxml2::XMLElement *tag) {
-
+ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag){
   auto type = tag->Attribute("type");
   if (!type) {
     throw std::runtime_error("Tipo de objeto não encontrado");
   }
-
+  
   auto type_ = std::string(type);
-
-  if (type_ != "sphere") {
-    throw std::runtime_error("Objeto não parseavel");
-  }
-  auto radius_raw = tag->Attribute("radius");
-  auto center_raw = tag->Attribute("center");
-
   ParamSet ps;
-
-  if (!radius_raw || !center_raw) {
-    throw std::runtime_error("Sphere sem centro ou raio.");
+  ps.insert("type", type_);
+  
+  if (type_ == "sphere") {
+    auto radius_raw = tag->Attribute("radius");
+    auto center_raw = tag->Attribute("center");  
+    if (!radius_raw || !center_raw) {
+      throw std::runtime_error("Sphere sem centro ou raio.");
+    }
+    auto center = parseSingleString(center_raw);
+    double radius = std::stod(radius_raw);
+  
+    ps.insert("radius", radius);
+    ps.insert("center", center);
+  }
+  else{
+    throw std::runtime_error("Objeto não parseável");
   }
 
-  auto center = parseSingleString(center_raw);
-  double radius = std::stod(radius_raw);
 
-  ps.insert("radius", radius);
-  ps.insert("center", center);
+
 
   return ps;
 }
+
 
 ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
   ParamSet ps;
