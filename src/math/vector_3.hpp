@@ -154,7 +154,7 @@ inline Vector3 &Vector3::operator/=(const double t) {
   return *this;
 }
 
-inline Vector3 unit_vector(Vector3 v) { return v / v.length(); }
+inline Vector3 unit_vector(const Vector3 &v) { return v / v.length(); }
 
 using Point3 = Vector3;
 

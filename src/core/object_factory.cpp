@@ -314,5 +314,7 @@ ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag){
     ps.insert("far_color", far);
 
   }
+  else if(integratortype == "normal_map" || integratortype == "normal"){}
+  else{ throw(std::runtime_error("Invalid Integrator type"));}
   return ps;
 }
