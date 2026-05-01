@@ -9,9 +9,8 @@ std::optional<Color> DepthIntegrator::li(const Ray& ray, const Scene &scene) con
     auto s = obj->intersect(ray);
     if(s && s->t < hit_t){
       hit_t = s->t;
-      double normalized_t = (std::clamp(hit_t, zmin, zmax)-zmin)/(zmax-zmin);
+      double normalized_t = std::clamp((hit_t-zmin)/(zmax-zmin), 0., 1.);
       c = Color::interpolate(near, far, normalized_t);
-      std::cout << c.value() << "\n";
     }
   }
   if(!c){
