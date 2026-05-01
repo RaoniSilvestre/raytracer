@@ -18,4 +18,7 @@ public:
 
   static std::unique_ptr<Camera>
   make_camera(const ParamSet &ps, std::unique_ptr<Film> film, LookAt lookat);
+  
+  Point3 origin;
+  Vector3 u, v, w;
 };

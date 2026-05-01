@@ -4,14 +4,11 @@
 BackgroundColor::BackgroundColor(Color bl, Color br, Color tl, Color tr)
     : bl(bl), br(br), tl(tl), tr(tr) {}
 
-double interpolate(double a, double b, double t) {
-  return a * (1.0f - t) + b * t;
-}
 
 Color BackgroundColor::lerp(const Color &a, const Color &b, double t) const {
-  double red = interpolate(a.red, b.red, t);
-  double green = interpolate(a.green, b.green, t);
-  double blue = interpolate(a.blue, b.blue, t);
+  double red = Color::interpolate(a.red, b.red, t);
+  double green = Color::interpolate(a.green, b.green, t);
+  double blue = Color::interpolate(a.blue, b.blue, t);
 
   return Color{red, green, blue};
 }

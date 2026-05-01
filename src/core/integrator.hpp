@@ -12,7 +12,7 @@
 class Integrator{
 public:
     static std::shared_ptr<Integrator> make_integrator(const ParamSet &ps, std::unique_ptr<Camera>);
-    
+    virtual void preprocess([[maybe_unused]]Scene &s){};
     virtual ~Integrator() = default;
     Integrator() = default;
     std::unique_ptr<Camera> camera;

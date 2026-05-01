@@ -1,4 +1,4 @@
-#include "core/integrator.hpp"
+#include "integrator/depth_integrator.hpp"
 #include "integrator/flat_integrator.hpp"
 #include <iostream>
 #include <memory>
@@ -10,6 +10,15 @@ std::shared_ptr<Integrator> Integrator::make_integrator(const ParamSet &ps, std:
     if(integrator_type == "flat"){
         std::cout << ">>> FlatIntegrator inicializado\n" << std::endl;
         return std::make_shared<FlatIntegrator>(std::move(c));
+    }
+    else if(integrator_type == "depth_map" || integrator_type == "depth"){
+        double zmin, zmax;
+        zmin = ps.retrieve<double>("zmin");
+        zmax = ps.retrieve<double>("zmax");
+
+        Color near(ps.retrieve<Color>("near_color")), far(ps.retrieve<Color>("far_color"));
+        std::cout << ">>> DepthIntegrator inicializado\n" << std::endl;
+        return std::make_shared<DepthIntegrator>(std::move(c), zmin, zmax, near, far);
     }
     else throw(std::runtime_error("Invalid integrator type"));
 }

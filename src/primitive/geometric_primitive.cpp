@@ -1,4 +1,5 @@
 #include "primitive/geometric_primitive.hpp"
+#include "math/vector_3.hpp"
 #include "shape/sphere.hpp"
 #include <iostream>
 #include <optional>
@@ -23,3 +24,6 @@ void GeometricPrimitive::make_object(const ParamSet &ps, Scene &scene) {
   }
 }
 
+Point3 GeometricPrimitive::get_center() const{
+  return geoshape->center;
+}

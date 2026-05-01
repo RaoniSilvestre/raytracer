@@ -21,5 +21,4 @@ public:
 
 private:
   double radius;
-  Point3 center;
 };

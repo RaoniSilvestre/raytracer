@@ -36,6 +36,7 @@ public:
     return is_near(red, other.red) && is_near(green, other.green) &&
            is_near(blue, other.blue);
   }
-
+  static double interpolate(const double a, const double b, double t);
+  static Color interpolate(const Color &a, const Color &b, const double t);
   static Color parseColorString(const char *color_str);
 };

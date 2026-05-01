@@ -8,8 +8,7 @@
 
 class OrthographicCamera : public Camera {
 public:
-  Vector3 u, v, w;
-  Point3 origin;
+  
   double l, r, b, t;
 
   OrthographicCamera(LookAt lookat, std::vector<double> sw,

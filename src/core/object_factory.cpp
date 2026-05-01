@@ -298,8 +298,21 @@ ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
 ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag){
   ParamSet ps;
   std::string integratortype = tag->Attribute("type");
-
   ps.insert("type", integratortype);
-  
+  if(integratortype == "flat"){}
+  else if(integratortype == "depth" || integratortype == "depth_map"){
+    double zmin, zmax;
+    zmin = std::stod(tag->Attribute("zmin"));
+    zmax = std::stod(tag->Attribute("zmax"));
+
+    const char* near_string = tag->Attribute("near_color"); 
+    const char* far_string = tag->Attribute("far_color");
+    Color near(Color::parseColorString(near_string)), far(Color::parseColorString(far_string));
+    ps.insert("zmin", zmin);
+    ps.insert("zmax", zmax);
+    ps.insert("near_color", near);
+    ps.insert("far_color", far);
+
+  }
   return ps;
 }

@@ -33,3 +33,12 @@ Color Color::parseColorString(const char *color_str) {
 
   return Color{r, g, b};
 }
+
+double Color::interpolate(const double a, const double b, double t){
+  return a * (1.0f - t) + b * t;
+}
+Color Color::interpolate(const Color &a, const Color &b, double t) {
+  return {a.red * (1.0f - t) + b.red * t, 
+          a.green * (1.0f - t) + b.green * t,
+          a.blue * (1.0f - t) + b.blue * t};
+}

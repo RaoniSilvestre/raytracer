@@ -1,6 +1,7 @@
 #pragma once
 #include "core/primitive.hpp"
 #include "core/shape.hpp"
+#include "math/vector_3.hpp"
 #include <memory>
 #include <optional>
 
@@ -12,6 +13,7 @@ public:
     bool intersect_p(const Ray &r) const override;
     std::optional<Surfel> intersect(const Ray &r) const override;
     const Material *get_material() override;
+    Point3 get_center() const override;
 private:
 
   std::shared_ptr<Material> material;

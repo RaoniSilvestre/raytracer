@@ -4,8 +4,6 @@
 
 class PerspectiveCamera : public Camera {
 public:
-  Vector3 m_u, m_v, m_w;
-  Point3 m_origin;
 
   double m_fovy;
   double m_aspect_ratio;
@@ -25,11 +23,11 @@ public:
     m_r = m_aspect_ratio * m_t;
     m_l = -m_r;
 
-    m_origin = lookat.look_from;
+    origin = lookat.look_from;
 
-    m_w = unit_vector(lookat.look_at - lookat.look_from);
-    m_u = unit_vector(cross(lookat.up, m_w));
-    m_v = unit_vector(cross(m_w, m_u));
+    w = unit_vector(lookat.look_at - lookat.look_from);
+    u = unit_vector(cross(lookat.up, w));
+    v = unit_vector(cross(w, u));
   }
 
   Ray generate_ray(u_int32_t x, u_int32_t y) override;
