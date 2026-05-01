@@ -6,7 +6,6 @@
 #include "core/param_set.hpp"
 #include "object_factory.hpp"
 #include "tinyxml2.h"
-#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <memory>

@@ -52,6 +52,12 @@ ParamSet ObjectFactory::parseFilm(tinyxml2::XMLElement *tag) {
 
   const char *x_res_ptr = tag->Attribute("w_res");
   const char *y_res_ptr = tag->Attribute("h_res");
+  if(x_res_ptr==nullptr){
+    x_res_ptr = tag->Attribute("x_res");
+  }
+  if(y_res_ptr == nullptr){
+    y_res_ptr = tag->Attribute("y_res");
+  }
   const char *filename_ptr = tag->Attribute("filename");
   const char *img_type_ptr = tag->Attribute("img_type");
 
