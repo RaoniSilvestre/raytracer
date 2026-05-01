@@ -1,6 +1,7 @@
 #include "integrator/depth_integrator.hpp"
 #include "core/scene.hpp"
 #include <algorithm>
+#include <limits>
 
 std::optional<Color> DepthIntegrator::li(const Ray& ray, const Scene &scene) const{
   std::optional<Color> c = std::nullopt;
@@ -19,13 +20,17 @@ std::optional<Color> DepthIntegrator::li(const Ray& ray, const Scene &scene) con
   return c;
 }
 
-void DepthIntegrator::preprocess(Scene &scene){
-    double min_t_dist;
-    double max_t_dist;
-    for (const auto &obj : scene.objects){
+void DepthIntegrator::preprocess(const Scene &scene){
+    std::cout << ">>> Preprocessing image\n";
+    double min_t_dist = 0;
+    double max_t_dist = std::numeric_limits<double>::infinity();
+  
+    for (const auto &obj : scene.objects) {
         double dist = (obj->get_center() - camera->origin).length();
         min_t_dist = std::min(min_t_dist, dist);
-        max_t_dist = std::max(max_t_dist, dist); 
+        max_t_dist = std::max(max_t_dist, dist);
     }
-    z_depth = max_t_dist;
+  this->scene_z_min = min_t_dist;
+  this->scene_z_max = max_t_dist; 
+  std::cout << ">>> Preprocessing finished\n";
 }

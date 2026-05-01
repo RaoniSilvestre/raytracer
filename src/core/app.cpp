@@ -90,7 +90,7 @@ void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrato
   std::cerr << ">>> Começando renderização\n";
   const int Y_RES = static_cast<int>(integrator->camera->film->y_res);
   const int X_RES = static_cast<int>(integrator->camera->film->x_res);
-
+  integrator->preprocess(scene);
   for (int j = Y_RES - 1; j >= 0; j--) {
     const double y_proportion = double(j) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {

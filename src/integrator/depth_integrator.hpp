@@ -9,12 +9,13 @@ public:
     zmin{min}, zmax{max}, near{n}, far{f}{
         camera = std::move(c);
     };
-    void preprocess(Scene &s) override;
+    void preprocess(const Scene &s) override;
 private:
     double zmin;
     double zmax;
     
     Color near;
     Color far;
-    double z_depth;
+    double scene_z_min;
+    double scene_z_max;
 };

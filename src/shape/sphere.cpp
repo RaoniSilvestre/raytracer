@@ -34,7 +34,7 @@ std::optional<Surfel> Sphere::intersect(const Ray &r) const {
   double discriminant = half_b * half_b - a * c;
 
   if (discriminant < 0) {
-    return std::nullopt;
+    return s;
   }
 
   double sqrtd = sqrt(discriminant);
@@ -43,7 +43,7 @@ std::optional<Surfel> Sphere::intersect(const Ray &r) const {
   if (t < 0) {
     t = (-half_b + sqrtd) / a;
     if (t < 0) {
-      return std::nullopt;
+      return s;
     }
   }
 
