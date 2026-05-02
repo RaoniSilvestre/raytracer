@@ -20,6 +20,6 @@
         <object type="sphere" radius="1" center="7 1.5 10" />
 
         <material type="flat" color="253 3 3" /> <!-- Red -->
-        <object type="sphere" radius="0.8" center="1 -10 5" />
+        <object type="sphere" radius="0.8" center="1 -2.5 5" />
     <world_end/>
 </RT3>
