@@ -9,7 +9,6 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
-#include <omp.h>
 #include <optional>
 #include <ostream>
 #include <stdexcept>
@@ -94,7 +93,7 @@ void App::render(const Scene &scene,
   const int Y_RES = static_cast<int>(integrator->camera->film->y_res);
   const int X_RES = static_cast<int>(integrator->camera->film->x_res);
   integrator->preprocess(scene);
-#pragma omp parallel for
+
   for (int j = Y_RES - 1; j >= 0; j--) {
     const double y_proportion = double(j) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {
