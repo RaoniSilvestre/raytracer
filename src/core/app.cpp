@@ -7,13 +7,18 @@
 #include "object_factory.hpp"
 #include "tinyxml2.h"
 #include <cassert>
+#include <cstdint>
+#include <functional>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <ostream>
 #include <stdexcept>
 #include <string>
 #include <sys/types.h>
+#include <thread>
+#include <vector>
 
 ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   std::cout << "Lendo arquivo: " << opts.input << std::endl;
@@ -85,13 +90,10 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   }
   return {integrator};
 }
-
-void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrator){
-  std::cerr << ">>> Começando renderização\n";
-  const int Y_RES = static_cast<int>(integrator->camera->film->y_res);
-  const int X_RES = static_cast<int>(integrator->camera->film->x_res);
-  integrator->preprocess(scene);
-  for (int j = Y_RES - 1; j >= 0; j--) {
+void direct_workers(int32_t work_id, u_int32_t threadcount, const Scene &scene, const std::shared_ptr<Integrator> integrator){
+  int32_t Y_RES = static_cast<int32_t>(integrator->camera->film->y_res);
+  int32_t X_RES = static_cast<int32_t>(integrator->camera->film->x_res);
+  for(int32_t j = Y_RES-1-work_id; j>=0; j-=threadcount){
     const double y_proportion = double(j) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {
       const double x_proportion = double(i) / double(X_RES);
@@ -110,6 +112,40 @@ void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrato
     }
   }
 }
+void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrator){
+  std::cerr << ">>> Começando renderização\n";
+  // const int Y_RES = static_cast<int>(integrator->camera->film->y_res);
+  // const int X_RES = static_cast<int>(integrator->camera->film->x_res);
+  // integrator->preprocess(scene);
+  auto thread_count = static_cast<int>(std::thread::hardware_concurrency());
+  std::cout << "threadcount: " << thread_count << "\n";
+  std::vector<std::thread> workers;
+  for(int32_t i=0;i<thread_count;i++){
+    workers.emplace_back(direct_workers, i, thread_count, std::cref(scene), integrator);
+  }
+  for(auto &t: workers){
+    t.join();
+  }
+  // for (int j = Y_RES - 1; j >= 0; j--) {
+  //   const double y_proportion = double(j) / double(Y_RES);
+  //   for (int i = 0; i < X_RES; i++) {
+  //     const double x_proportion = double(i) / double(X_RES);
+  //     auto ray = integrator->camera->generate_ray(static_cast<u_int32_t>(i),
+  //                                           static_cast<u_int32_t>(j));
+  //     auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};
+      
+  //     std::optional<Color> hit = integrator->li(ray, scene);
+      
+  //     if (hit) {
+  //       integrator->camera->film->write(p, *hit);
+  //     } else {
+  //       auto bg = scene.background->sampleUV(x_proportion, y_proportion);
+  //       integrator->camera->film->write(p, bg);
+  //     }
+  //   }
+  // }
+}
+
 
 void App::run(const RunningOptions &opts) {
   Scene scene;

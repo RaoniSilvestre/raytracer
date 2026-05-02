@@ -12,6 +12,6 @@ target_link_libraries(core_lib
         lodepng
 )
 
-add_executable(app main.cpp)
+add_executable(app_threaded main.cpp)
 
-target_link_libraries(app PRIVATE core_lib)
+target_link_libraries(app_threaded PRIVATE core_lib)

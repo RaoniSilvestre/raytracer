@@ -38,6 +38,8 @@ public:
   void write(Point2 p, Color c);
 
 private:
+
   void export_ppm();
   bool export_png();
+  void write_buffer_row(u_int32_t work_id, u_int32_t thread_count, unsigned char* export_buffer, u_int32_t Y_RES, u_int32_t X_RES);
 };
