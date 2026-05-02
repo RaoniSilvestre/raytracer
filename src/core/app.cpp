@@ -1,7 +1,7 @@
 #include "app.hpp"
 #include "core/background_color.hpp"
-#include "core/integrator.hpp"
 #include "core/film.hpp"
+#include "core/integrator.hpp"
 #include "core/look_at.hpp"
 #include "core/param_set.hpp"
 #include "object_factory.hpp"
@@ -9,6 +9,7 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
+#include <omp.h>
 #include <optional>
 #include <ostream>
 #include <stdexcept>
@@ -53,10 +54,11 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
 
   auto film = std::make_unique<Film>(film_ps);
   auto lookat = LookAt(lookat_ps);
-  
+
   auto camera = Camera::make_camera(camera_ps, std::move(film), lookat);
 
-  auto integrator = Integrator::make_integrator(integrator_ps, std::move(camera));
+  auto integrator =
+      Integrator::make_integrator(integrator_ps, std::move(camera));
   auto iter = rt3_xml->FirstChildElement("world_begin")->NextSiblingElement();
 
   assert(iter != nullptr);
@@ -86,21 +88,23 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   return {integrator};
 }
 
-void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrator){
+void App::render(const Scene &scene,
+                 const std::shared_ptr<Integrator> integrator) {
   std::cerr << ">>> Começando renderização\n";
   const int Y_RES = static_cast<int>(integrator->camera->film->y_res);
   const int X_RES = static_cast<int>(integrator->camera->film->x_res);
   integrator->preprocess(scene);
+#pragma omp parallel for
   for (int j = Y_RES - 1; j >= 0; j--) {
     const double y_proportion = double(j) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {
       const double x_proportion = double(i) / double(X_RES);
       auto ray = integrator->camera->generate_ray(static_cast<u_int32_t>(i),
-                                            static_cast<u_int32_t>(j));
+                                                  static_cast<u_int32_t>(j));
       auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};
-      
+
       std::optional<Color> hit = integrator->li(ray, scene);
-      
+
       if (hit) {
         integrator->camera->film->write(p, *hit);
       } else {
