@@ -1,42 +1,30 @@
 #include "film.hpp"
 #include "../lib/lodepng/lodepng.h"
-#include <fstream>
+#include <cstddef>
 #include <iostream>
 #include <sys/types.h>
-#include <vector>
 
 void Film::export_ppm() {
-  const u_int32_t Y_RES = this->y_res;
-  const u_int32_t X_RES = this->x_res;
-  std::ofstream file(this->filename);
-  file << "P3" << "\n";
-  file << X_RES << " " << Y_RES << "\n";
-  file << "255" << "\n";
-  for (u_int32_t i = 0; i < Y_RES; i++) {
-    for (u_int32_t j = 0; j < X_RES; j++) {
-      file << this->buffer[i][j];
-    }
-    file << "\n";
-  }
-  file.close();
+  // const u_int32_t Y_RES = this->y_res;
+  // const u_int32_t X_RES = this->x_res;
+  // std::ofstream file(this->filename);
+  // file << "P3" << "\n";
+  // file << X_RES << " " << Y_RES << "\n";
+  // file << "255" << "\n";
+  // for (u_int32_t i = 0; i < Y_RES; i++) {
+  //   for (u_int32_t j = 0; j < X_RES; j++) {
+  //     file << this->buffer[i][j];
+  //   }
+  //   file << "\n";
+  // }
+  // file.close();
 }
 
 bool Film::export_png() {
   const u_int32_t Y_RES = this->y_res;
   const u_int32_t X_RES = this->x_res;
-  std::vector<unsigned char> export_buffer;
-  export_buffer.reserve(X_RES * Y_RES * 4);
 
-  for (u_int32_t i = Y_RES - 1; i >= 0 && i < 1000000; i--) {
-    for (u_int32_t j = 0; j < X_RES; j++) {
-      export_buffer.push_back(this->buffer[i][j].red_int());
-      export_buffer.push_back(this->buffer[i][j].green_int());
-      export_buffer.push_back(this->buffer[i][j].blue_int());
-      export_buffer.push_back(255);
-    }
-  }
-  return lodepng::encode(this->filename, export_buffer.data(), X_RES, Y_RES) ==
-         0;
+  return lodepng::encode(this->filename, buffer, X_RES, Y_RES) == 0;
 }
 
 void Film::export_image() {
@@ -67,8 +55,24 @@ Film::Film(const ParamSet &ps) {
   filename = _filename;
   img_type = _img_type;
 
-  buffer.assign(static_cast<size_t>(y_res),
-                std::vector<Color>(static_cast<size_t>(x_res), Color{0, 0, 0}));
+  buffer_size = static_cast<size_t>(y_res) * static_cast<size_t>(x_res) * 4;
+  buffer = new unsigned char[buffer_size];
 }
 
-void Film::write(Point2 p, Color c) { buffer.at(p.j).at(p.i) = c; }
+// ------------------------------------------------
+//
+// --------------
+// --------------
+// --------------
+// --------------
+//
+//
+
+void Film::write(Point2 p, Color c) {
+  size_t pos = ((y_res - p.j - 1) * x_res + p.i) * 4;
+
+  buffer[pos] = c.red_int();
+  buffer[pos + 1] = c.green_int();
+  buffer[pos + 2] = c.blue_int();
+  buffer[pos + 3] = static_cast<unsigned char>(255);
+}

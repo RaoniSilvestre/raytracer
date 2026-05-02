@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <string>
 #include <sys/types.h>
-#include <vector>
 
 struct Point2 {
   u_int32_t i;
@@ -19,7 +18,8 @@ public:
   std::string filename;
   u_int32_t x_res;
   u_int32_t y_res;
-  std::vector<std::vector<Color>> buffer;
+  unsigned char *buffer;
+  size_t buffer_size;
 
   void export_image();
   Film(const ParamSet &ps);
@@ -31,15 +31,17 @@ public:
     filename = fname;
     x_res = x;
     y_res = y;
-    buffer.assign(static_cast<size_t>(y),
-                  std::vector<Color>(static_cast<size_t>(x), Color{0, 0, 0}));
+
+    buffer_size = static_cast<size_t>(y) * static_cast<size_t>(x) * 4;
+    buffer = new unsigned char[buffer_size];
   }
 
   void write(Point2 p, Color c);
 
 private:
-
   void export_ppm();
   bool export_png();
-  void write_buffer_row(u_int32_t work_id, u_int32_t thread_count, unsigned char* export_buffer, u_int32_t Y_RES, u_int32_t X_RES);
+  void write_buffer_row(u_int32_t work_id, u_int32_t thread_count,
+                        unsigned char *export_buffer, u_int32_t Y_RES,
+                        u_int32_t X_RES);
 };

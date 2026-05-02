@@ -1,6 +1,6 @@
 build_dir := "build"
-app_name := "app"
-scene := "scenes/scene-perspective-camera.xml"
+app_name := "app_threaded"
+scene := "scenes/normal-test.xml"
 
 default: build
 

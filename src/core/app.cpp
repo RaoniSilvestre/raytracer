@@ -1,7 +1,7 @@
 #include "app.hpp"
 #include "core/background_color.hpp"
-#include "core/integrator.hpp"
 #include "core/film.hpp"
+#include "core/integrator.hpp"
 #include "core/look_at.hpp"
 #include "core/param_set.hpp"
 #include "object_factory.hpp"
@@ -11,7 +11,6 @@
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <mutex>
 #include <optional>
 #include <ostream>
 #include <stdexcept>
@@ -58,10 +57,11 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
 
   auto film = std::make_unique<Film>(film_ps);
   auto lookat = LookAt(lookat_ps);
-  
+
   auto camera = Camera::make_camera(camera_ps, std::move(film), lookat);
 
-  auto integrator = Integrator::make_integrator(integrator_ps, std::move(camera));
+  auto integrator =
+      Integrator::make_integrator(integrator_ps, std::move(camera));
   auto iter = rt3_xml->FirstChildElement("world_begin")->NextSiblingElement();
 
   assert(iter != nullptr);
@@ -90,19 +90,21 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   }
   return {integrator};
 }
-void direct_workers(int32_t work_id, u_int32_t threadcount, const Scene &scene, const std::shared_ptr<Integrator> integrator){
+
+void direct_workers(int32_t work_id, u_int32_t threadcount, const Scene &scene,
+                    const std::shared_ptr<Integrator> integrator) {
   int32_t Y_RES = static_cast<int32_t>(integrator->camera->film->y_res);
   int32_t X_RES = static_cast<int32_t>(integrator->camera->film->x_res);
-  for(int32_t j = Y_RES-1-work_id; j>=0; j-=threadcount){
+  for (int32_t j = Y_RES - 1 - work_id; j >= 0; j -= threadcount) {
     const double y_proportion = double(j) / double(Y_RES);
     for (int i = 0; i < X_RES; i++) {
       const double x_proportion = double(i) / double(X_RES);
       auto ray = integrator->camera->generate_ray(static_cast<u_int32_t>(i),
-                                            static_cast<u_int32_t>(j));
+                                                  static_cast<u_int32_t>(j));
       auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};
-      
+
       std::optional<Color> hit = integrator->li(ray, scene);
-      
+
       if (hit) {
         integrator->camera->film->write(p, *hit);
       } else {
@@ -112,18 +114,23 @@ void direct_workers(int32_t work_id, u_int32_t threadcount, const Scene &scene, 
     }
   }
 }
-void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrator){
+void App::render(const Scene &scene,
+                 const std::shared_ptr<Integrator> integrator) {
   std::cerr << ">>> Começando renderização\n";
-  // const int Y_RES = static_cast<int>(integrator->camera->film->y_res);
-  // const int X_RES = static_cast<int>(integrator->camera->film->x_res);
+
+  const int Y_RES = static_cast<int>(integrator->camera->film->y_res);
+  const int X_RES = static_cast<int>(integrator->camera->film->x_res);
+
+  std::cout << "BUFFER SIZE : " << Y_RES * X_RES * 4 << std::endl;
   // integrator->preprocess(scene);
   auto thread_count = static_cast<int>(std::thread::hardware_concurrency());
   std::cout << "threadcount: " << thread_count << "\n";
   std::vector<std::thread> workers;
-  for(int32_t i=0;i<thread_count;i++){
-    workers.emplace_back(direct_workers, i, thread_count, std::cref(scene), integrator);
+  for (int32_t i = 0; i < thread_count; i++) {
+    workers.emplace_back(direct_workers, i, thread_count, std::cref(scene),
+                         integrator);
   }
-  for(auto &t: workers){
+  for (auto &t : workers) {
     t.join();
   }
   // for (int j = Y_RES - 1; j >= 0; j--) {
@@ -131,11 +138,11 @@ void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrato
   //   for (int i = 0; i < X_RES; i++) {
   //     const double x_proportion = double(i) / double(X_RES);
   //     auto ray = integrator->camera->generate_ray(static_cast<u_int32_t>(i),
-  //                                           static_cast<u_int32_t>(j));
+  //                                                 static_cast<u_int32_t>(j));
   //     auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};
-      
+  //
   //     std::optional<Color> hit = integrator->li(ray, scene);
-      
+  //
   //     if (hit) {
   //       integrator->camera->film->write(p, *hit);
   //     } else {
@@ -145,7 +152,6 @@ void App::render(const Scene &scene, const std::shared_ptr<Integrator> integrato
   //   }
   // }
 }
-
 
 void App::run(const RunningOptions &opts) {
   Scene scene;
