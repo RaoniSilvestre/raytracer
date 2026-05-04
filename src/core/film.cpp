@@ -35,8 +35,10 @@ bool Film::export_png() {
       export_buffer.push_back(255);
     }
   }
-  return lodepng::encode(this->filename, export_buffer.data(), X_RES, Y_RES) ==
-         0;
+
+  auto file = "images/" + this->filename;
+
+  return lodepng::encode(file, export_buffer.data(), X_RES, Y_RES) == 0;
 }
 
 void Film::export_image() {
