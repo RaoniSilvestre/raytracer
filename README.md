@@ -78,3 +78,12 @@ Lista de todas as implementações concluídas:
 - [X] Depth integrator (In progress)
 - [X] Normal Map Integrator
 
+## Projeto 5 (Modelo reflexivo Blinn-Phong)
+
+- [ ] Classe LightSource
+- [ ] Novos materiais
+- [ ] Implementar o integrador Blinn-Phong
+
+## Projeto 6 (...)
+
+- [ ] ...
