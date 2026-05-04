@@ -59,15 +59,6 @@ Film::Film(const ParamSet &ps) {
   buffer = new unsigned char[buffer_size];
 }
 
-// ------------------------------------------------
-//
-// --------------
-// --------------
-// --------------
-// --------------
-//
-//
-
 void Film::write(Point2 p, Color c) {
   size_t pos = ((y_res - p.j - 1) * x_res + p.i) * 4;
 

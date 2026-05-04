@@ -1,10 +1,13 @@
-# Permitir adicionar cenas diferentes em um mesmo xml
+## Relacionado ao projeto 4
 
-# Permitir importação de xml
+- [ ] Permitir adicionar cenas diferentes em um mesmo xml
+- [ ] Permitir importação de xml
+- [ ] Adequar o parser à especificação de Selan
+> O parser ainda não suporta algumas entradas
+> Exemplo: se a cor do material for "colors" ele dá erro 
+Implementar o Aggregate
+- [ ] Corrigir exportação para PPM
 
-# Adequar o parser à especificação de Selan
-    O parser ainda não suporta algumas entradas
-    
-    Exemplo: se a cor do material for "colors" ele dá erro 
+## Relacionado ao projeto 5
 
-# Implementar o Aggregate
+
