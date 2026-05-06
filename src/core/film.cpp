@@ -24,7 +24,7 @@ bool Film::export_png() {
   const u_int32_t Y_RES = this->y_res;
   const u_int32_t X_RES = this->x_res;
 
-  return lodepng::encode(this->filename, buffer, X_RES, Y_RES) == 0;
+  return lodepng::encode("images/" + this->filename, buffer, X_RES, Y_RES) == 0;
 }
 
 void Film::export_image() {
