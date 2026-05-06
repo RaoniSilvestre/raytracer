@@ -52,10 +52,10 @@ ParamSet ObjectFactory::parseFilm(tinyxml2::XMLElement *tag) {
 
   const char *x_res_ptr = tag->Attribute("w_res");
   const char *y_res_ptr = tag->Attribute("h_res");
-  if(x_res_ptr==nullptr){
+  if (x_res_ptr == nullptr) {
     x_res_ptr = tag->Attribute("x_res");
   }
-  if(y_res_ptr == nullptr){
+  if (y_res_ptr == nullptr) {
     y_res_ptr = tag->Attribute("y_res");
   }
   const char *filename_ptr = tag->Attribute("filename");
@@ -244,38 +244,46 @@ ParamSet ObjectFactory::parseCamera(tinyxml2::XMLElement *tag) {
   throw std::runtime_error("Tipo de camera não implementado.");
 }
 
-ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag){
+ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag) {
   auto type = tag->Attribute("type");
   if (!type) {
     throw std::runtime_error("Tipo de objeto não encontrado");
   }
-  
+
   auto type_ = std::string(type);
   ParamSet ps;
   ps.insert("type", type_);
-  
+
   if (type_ == "sphere") {
     auto radius_raw = tag->Attribute("radius");
-    auto center_raw = tag->Attribute("center");  
+    auto center_raw = tag->Attribute("center");
     if (!radius_raw || !center_raw) {
       throw std::runtime_error("Sphere sem centro ou raio.");
     }
     auto center = parseSingleString(center_raw);
     double radius = std::stod(radius_raw);
-  
+
     ps.insert("radius", radius);
     ps.insert("center", center);
-  }
-  else{
+  } else if (type_ == "triangle") {
+    auto A_raw = tag->Attribute("a");
+    auto B_raw = tag->Attribute("b");
+    auto C_raw = tag->Attribute("c");
+    if (!A_raw || !B_raw || !C_raw) {
+      throw std::runtime_error("Triangle sem vértice A, B ou C.");
+    }
+    auto A = parseSingleString(A_raw);
+    auto B = parseSingleString(B_raw);
+    auto C = parseSingleString(C_raw);
+    ps.insert("A", A);
+    ps.insert("B", B);
+    ps.insert("C", C);
+  } else {
     throw std::runtime_error("Objeto não parseável");
   }
 
-
-
-
   return ps;
 }
-
 
 ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
   ParamSet ps;
@@ -295,26 +303,28 @@ ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
   return ps;
 }
 
-ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag){
+ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag) {
   ParamSet ps;
   std::string integratortype = tag->Attribute("type");
   ps.insert("type", integratortype);
-  if(integratortype == "flat"){}
-  else if(integratortype == "depth" || integratortype == "depth_map"){
+  if (integratortype == "flat") {
+  } else if (integratortype == "depth" || integratortype == "depth_map") {
     double zmin, zmax;
     zmin = std::stod(tag->Attribute("zmin"));
     zmax = std::stod(tag->Attribute("zmax"));
 
-    const char* near_string = tag->Attribute("near_color"); 
-    const char* far_string = tag->Attribute("far_color");
-    Color near(Color::parseColorString(near_string)), far(Color::parseColorString(far_string));
+    const char *near_string = tag->Attribute("near_color");
+    const char *far_string = tag->Attribute("far_color");
+    Color near(Color::parseColorString(near_string)),
+        far(Color::parseColorString(far_string));
     ps.insert("zmin", zmin);
     ps.insert("zmax", zmax);
     ps.insert("near_color", near);
     ps.insert("far_color", far);
 
+  } else if (integratortype == "normal_map" || integratortype == "normal") {
+  } else {
+    throw(std::runtime_error("Invalid Integrator type"));
   }
-  else if(integratortype == "normal_map" || integratortype == "normal"){}
-  else{ throw(std::runtime_error("Invalid Integrator type"));}
   return ps;
 }
