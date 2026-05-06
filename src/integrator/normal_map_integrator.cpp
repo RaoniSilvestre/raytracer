@@ -2,7 +2,7 @@
 #include "math/vector_3.hpp"
 
 Color convert_vec_into_color(Vector3 &v){
-    return {v.x()*255., v.y()*255., v.z()*255.};
+    return {v.x(), v.y(), v.z()};
 }
 
 Vector3 convert_vec_into_positive(Vector3 &v){

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -7,8 +9,7 @@ class Color {
 
 private:
   static uint8_t map_to_255(double value) {
-    double clamped = std::clamp(value, 0.0, 255.0);
-    return static_cast<uint8_t>(std::lround(clamped));
+    return static_cast<uint8_t>(std::lround(value * 255.));
   }
 
 public:

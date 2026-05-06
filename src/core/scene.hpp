@@ -1,10 +1,10 @@
 #pragma once
-
 #include "core/background_color.hpp"
 #include "core/primitive.hpp"
+#include "light.hpp"
+#include <map>
 #include <memory>
 #include <vector>
-#include <map>
 
 class Scene {
 public:
@@ -12,4 +12,5 @@ public:
   std::vector<std::unique_ptr<Primitive>> objects;
   std::map<std::string, std::shared_ptr<Material>> named_materials;
   std::shared_ptr<Material> material;
+  std::vector<std::unique_ptr<Light>> lights;
 };

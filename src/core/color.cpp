@@ -21,13 +21,13 @@ Color Color::parseColorString(const char *color_str) {
 
   // Se todos os valores forem <= 1.0, assume que vieram normalizados e converte
   // para 0-255
-  if (r <= 1.0 && g <= 1.0 && b <= 1.0) {
-    r *= 255.0;
-    g *= 255.0;
-    b *= 255.0;
+  if (r > 1.0 && g > 1.0 && b > 1.0) {
+    r /= 255.0;
+    g /= 255.0;
+    b /= 255.0;
   }
 
-  if (r > 255.0 || g > 255.0 || b > 255.0) {
+  if (r > 1 || g > 1 || b > 1) {
     throw std::runtime_error("Valores de cor fora do intervalo suportado.");
   }
 
