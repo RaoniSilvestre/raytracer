@@ -1,3 +1,6 @@
+## Relacionado ao parser
+- [ ] Fazer o parser utilizar valores padrões ou ignorar ao invés de terminar a execução para objetos não críticos 
+
 ## Relacionado ao projeto 4
 
 - [ ] Permitir adicionar cenas diferentes em um mesmo xml

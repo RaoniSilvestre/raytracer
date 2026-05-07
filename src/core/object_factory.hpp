@@ -19,16 +19,17 @@ private:
   static ParamSet parseObject(tinyxml2::XMLElement *tag);
   static ParamSet parseMaterial(tinyxml2::XMLElement *tag);
   static ParamSet parseIntegrator(tinyxml2::XMLElement *tag);
-
+  static ParamSet parseLight(tinyxml2::XMLElement *tag);
+  
   static inline const std::unordered_map<std::string, TagParser>
-      param_set_parser_map = {
-          {"background", &ObjectFactory::parseBackground},
-          {"film", &ObjectFactory::parseFilm},
-          {"lookat", &ObjectFactory::parseLookAt},
-          {"camera", &ObjectFactory::parseCamera},
-          {"integrator", &ObjectFactory::parseIntegrator},
-          {"object", &ObjectFactory::parseObject},
-          {"material", &ObjectFactory::parseMaterial},
+      param_set_parser_map = {{"background", &ObjectFactory::parseBackground},
+                              {"film", &ObjectFactory::parseFilm},
+                              {"lookat", &ObjectFactory::parseLookAt},
+                              {"camera", &ObjectFactory::parseCamera},
+                              {"integrator", &ObjectFactory::parseIntegrator},
+                              {"object", &ObjectFactory::parseObject},
+                              {"material", &ObjectFactory::parseMaterial},
+                              {"light_source", &ObjectFactory::parseLight}
 
   };
 };

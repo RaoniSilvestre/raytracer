@@ -5,7 +5,7 @@
 #include <map>
 #include <memory>
 #include <vector>
-
+class Light;
 class Scene {
 public:
   std::unique_ptr<BackgroundColor> background;

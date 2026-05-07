@@ -1,5 +1,6 @@
 #include "object_factory.hpp"
 #include "core/background_color.hpp"
+#include "core/color.hpp"
 #include "core/param_set.hpp"
 #include "math/vector_3.hpp"
 #include "tinyxml2.h"
@@ -288,17 +289,23 @@ ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag) {
 ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
   ParamSet ps;
   auto type_raw = tag->Attribute("type");
-  auto color_raw = tag->Attribute("color");
 
-  if (!type_raw || !color_raw) {
-    throw std::runtime_error("Material sem cor ou tipo válido");
+  if (!type_raw) {
+    throw std::runtime_error("Material tipo válido");
+  }
+  auto type = std::string(type_raw);
+  if (type == "flat") {
+    auto color_raw = tag->Attribute("color");
+    if (!color_raw) {
+      throw std::runtime_error("Material sem cor válida");
+    }
+    auto color = Color::parseColorString(color_raw);
+    ps.insert("color", color);
+  } else if (type == "blinn") {
+    
   }
 
-  auto type = std::string(type_raw);
-  auto color = Color::parseColorString(color_raw);
-
   ps.insert("type", type);
-  ps.insert("color", color);
 
   return ps;
 }
@@ -326,5 +333,26 @@ ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag) {
   } else {
     throw(std::runtime_error("Invalid Integrator type"));
   }
+  return ps;
+}
+ParamSet ObjectFactory::parseLight(tinyxml2::XMLElement *tag) {
+  ParamSet ps;
+  const char *type_raw = tag->Attribute("type");
+  if (!type_raw) {
+    throw std::runtime_error("Tipo não informado na luz");
+  }
+  std::string type(type_raw);
+  Color intensity = Color::parseColorString(tag->Attribute("I")),
+        scale = Color::parseColorString(tag->Attribute("scale"));
+  if (type == "point") {
+    auto from = parseSingleString(tag->Attribute("from"));
+    if (type == "directional") {
+      auto to = parseSingleString(tag->Attribute("to"));
+      ps.insert("to", to);
+    }
+    ps.insert("from", from);
+  }
+  ps.insert("intensity", intensity);
+  ps.insert("scale", scale);
   return ps;
 }

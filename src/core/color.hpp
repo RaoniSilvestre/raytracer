@@ -14,7 +14,7 @@ private:
 
 public:
   double red, green, blue;
-
+  Color() = default;
   Color(double red, double green, double blue)
       : red(red), green(green), blue(blue) {}
 
