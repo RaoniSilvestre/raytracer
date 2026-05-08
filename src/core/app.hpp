@@ -19,7 +19,9 @@ struct ParseReturn {
 class App {
 private:
   using APIFunction = std::function<void(const ParamSet &, Scene &scene)>;
-
+  static void
+  single_thread_render(const Scene &scene,
+                       const std::shared_ptr<Integrator> integrator);
   static ParseReturn parse(const RunningOptions &opts, Scene &scene);
   static void render(const Scene &scene,
                      const std::shared_ptr<Integrator> integrator);

@@ -12,7 +12,7 @@ std::optional<Color> FlatIntegrator::li(const Ray &ray,
     auto s = obj->intersect(ray);
     if (s && s->t < hit_t) {
       hit_t = s->t;
-      c = obj->get_material()->color;
+      c = obj->get_material()->get_color();
     }
   }
 

@@ -1,5 +1,4 @@
 #include "object_factory.hpp"
-#include "core/background_color.hpp"
 #include "core/color.hpp"
 #include "core/param_set.hpp"
 #include "math/vector_3.hpp"
@@ -302,7 +301,17 @@ ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
     auto color = Color::parseColorString(color_raw);
     ps.insert("color", color);
   } else if (type == "blinn") {
-    
+    auto ambient = parseSingleString(tag->Attribute("ambient"));
+    auto diffuse = parseSingleString(tag->Attribute("diffuse"));
+    auto specular = parseSingleString(tag->Attribute("specular"));
+    auto glossiness = std::stod(tag->Attribute("glossiness"));
+    // if(!glossiness_raw){
+    //   throw
+    // }
+    ps.insert("glossiness", glossiness);
+    ps.insert("ambient", ambient);
+    ps.insert("diffuse", diffuse);
+    ps.insert("specular", specular);
   }
 
   ps.insert("type", type);
@@ -354,5 +363,48 @@ ParamSet ObjectFactory::parseLight(tinyxml2::XMLElement *tag) {
   }
   ps.insert("intensity", intensity);
   ps.insert("scale", scale);
+  ps.insert("type", type);
+  return ps;
+}
+
+ParamSet ObjectFactory::parseNamedMaterial(tinyxml2::XMLElement *tag) {
+  ParamSet ps;
+  auto name_raw = tag->Attribute("name");
+  if (!name_raw) {
+    throw std::runtime_error("Nome do material inválido");
+  }
+  auto name = std::string(name_raw);
+  ps.insert("name", name);
+
+  return ps;
+}
+ParamSet ObjectFactory::parseMakeNamedMaterial(tinyxml2::XMLElement *tag) {
+  ParamSet ps;
+  auto type_raw = tag->Attribute("type");
+  auto name_raw = tag->Attribute("name");
+  if (!type_raw || !name_raw) {
+    throw std::runtime_error("Material de tipo ou nome inválido");
+  }
+  auto type = std::string(type_raw);
+  auto name = std::string(name_raw);
+  ps.insert("type", type);
+  ps.insert("name", name);
+  if (type == "flat") {
+    auto color_raw = tag->Attribute("color");
+    if (!color_raw) {
+      throw std::runtime_error("Material sem cor válida");
+    }
+    auto color = Color::parseColorString(color_raw);
+    ps.insert("color", color);
+  } else if (type == "blinn") {
+    auto ambient = Color::parseColorString(tag->Attribute("ambient"));
+    auto diffuse = Color::parseColorString(tag->Attribute("diffuse"));
+    auto specular = Color::parseColorString(tag->Attribute("specular"));
+
+    ps.insert("ambient", ambient);
+    ps.insert("diffuse", diffuse);
+    ps.insert("specular", specular);
+  }
+
   return ps;
 }
