@@ -1,6 +1,6 @@
 build_dir := "build"
 app_name := "app_threaded"
-scene := "scenes/normal-test.xml"
+scene := "normal-test"
 
 default: build
 
@@ -12,7 +12,7 @@ build:
     cmake --build {{build_dir}}
 
 run *args=scene: build
-    ./{{build_dir}}/src/{{app_name}} {{args}}
+    ./{{build_dir}}/src/{{app_name}} ./scenes/{{args}}.xml
 
 test: build
     ctest --test-dir {{build_dir}} --output-on-failure

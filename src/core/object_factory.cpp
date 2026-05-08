@@ -278,6 +278,19 @@ ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag) {
     ps.insert("A", A);
     ps.insert("B", B);
     ps.insert("C", C);
+  } else if (type_ == "plane") {
+    auto point_raw = tag->Attribute("point");
+    auto normal_raw = tag->Attribute("normal");
+
+    if (!point_raw || !normal_raw) {
+      throw std::runtime_error("Plano sem ponto ou vetor normal");
+    }
+
+    auto point = parseSingleString(point_raw);
+    auto normal = parseSingleString(normal_raw);
+
+    ps.insert("point", point);
+    ps.insert("normal", normal);
   } else {
     throw std::runtime_error("Objeto não parseável");
   }
@@ -308,7 +321,8 @@ ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag) {
   std::string integratortype = tag->Attribute("type");
   ps.insert("type", integratortype);
   if (integratortype == "flat") {
-  } else if (integratortype == "depth" || integratortype == "depth_map") {
+  } else if (integratortype == "depth" || integratortype == "depth_map" ||
+             integratortype == "color_depth") {
     double zmin, zmax;
     zmin = std::stod(tag->Attribute("zmin"));
     zmax = std::stod(tag->Attribute("zmax"));

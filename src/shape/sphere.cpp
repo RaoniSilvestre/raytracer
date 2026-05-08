@@ -6,6 +6,8 @@
 #include <cmath>
 #include <optional>
 
+Point3 Sphere::get_center() const { return this->center; }
+
 bool Sphere::intersect_p(const Ray &r) const {
   Vector3 o_c = r.origem - center;
   Vector3 d = r.direcao;
@@ -48,7 +50,7 @@ std::optional<Surfel> Sphere::intersect(const Ray &r) const {
   }
 
   Point3 hit_point = r(t);
-  s = {hit_point, hit_point-center, -r.direcao, t};
+  s = {hit_point, hit_point - center, -r.direcao, t};
   return s;
 }
 
