@@ -16,5 +16,6 @@ public:
   virtual ~Integrator() = default;
   Integrator() = default;
   std::unique_ptr<Camera> camera;
-  virtual std::optional<Color> li(const Ray &r, const Scene &scene) const = 0;
+  virtual std::optional<Color> li(const Ray &r, const Scene &scene,
+                                  int depth = 0) const = 0;
 };

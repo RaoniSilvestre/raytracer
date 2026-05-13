@@ -9,12 +9,12 @@ class Color {
 
 private:
   static uint8_t map_to_255(double value) {
-    return static_cast<uint8_t>(std::lround(value * 255.));
+    return static_cast<uint8_t>(std::lround(std::clamp(value, 0., 1.) * 255.));
   }
 
 public:
   double red, green, blue;
-
+  Color() = default;
   Color(double red, double green, double blue)
       : red(red), green(green), blue(blue) {}
 
@@ -36,6 +36,15 @@ public:
 
     return is_near(red, other.red) && is_near(green, other.green) &&
            is_near(blue, other.blue);
+  }
+  Color operator+(const Color &r) const {
+    return {this->red + r.red, this->green + r.green, this->blue + r.blue};
+  }
+  Color operator*(const Color &r) const {
+    return {this->red * r.red, this->green * r.green, this->blue * r.blue};
+  }
+  Color operator*(double r) const {
+    return {this->red * r, this->green * r, this->blue * r};
   }
   static double interpolate(const double a, const double b, double t);
   static Color interpolate(const Color &a, const Color &b, const double t);

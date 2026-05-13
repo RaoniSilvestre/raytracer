@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <limits>
 
-std::optional<Color> DepthIntegrator::li(const Ray &ray,
-                                         const Scene &scene) const {
+std::optional<Color> DepthIntegrator::li(const Ray &ray, const Scene &scene,
+                                         [[maybe_unused]] int depth) const {
   std::optional<Color> c = std::nullopt;
   double hit_t = std::numeric_limits<double>::infinity();
   for (const auto &obj : scene.objects) {

@@ -25,14 +25,14 @@ std::optional<Surfel> Triangle::intersect(const Ray &r) const {
   // desse paralelogramo.
   double det = dot(edge1, pvec);
 
+  if (std::abs(det) < EPSILON) {
+    return std::nullopt;
+  }
   // Divisões de crammer
   double beta = dot(tvec, pvec) / det;
   double gamma = dot(r.direcao, qvec) / det;
   double t = dot(edge2, qvec) / det;
 
-  if (std::abs(det) < EPSILON) {
-    return std::nullopt;
-  }
 
   if (beta < 0.0 || beta > 1.0) {
     return std::nullopt;
