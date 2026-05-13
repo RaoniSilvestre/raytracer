@@ -80,8 +80,10 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
     auto it = dispatch_map.find(tag_name);
     if (it != dispatch_map.end()) {
       ParamSet ps = ObjectFactory::parse(iter);
-
+      std::cout << ">>> Terminou de parsear elemento\n";
+      
       it->second(ps, scene);
+      
     } else {
       std::cout << ">>> Tag desconhecida: " << tag_name << std::endl;
     }
@@ -92,7 +94,7 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
 }
 
 void thread_render(int32_t work_id, u_int32_t threadcount, const Scene &scene,
-                    const std::shared_ptr<Integrator> integrator) {
+                   const std::shared_ptr<Integrator> integrator) {
   int32_t Y_RES = static_cast<int32_t>(integrator->camera->film->y_res);
   int32_t X_RES = static_cast<int32_t>(integrator->camera->film->x_res);
   for (int32_t j = Y_RES - 1 - work_id; j >= 0; j -= threadcount) {

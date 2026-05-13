@@ -3,13 +3,10 @@
 #include "core/param_set.hpp"
 #include "math/vector_3.hpp"
 
-class PointLight : public Light {
+class AmbientLight : public Light {
 public:
-  PointLight(const ParamSet &ps);
+  AmbientLight(const ParamSet &ps);
   Color sample_li(const Surfel &s, Vector3 &dir,
                   const std::vector<std::unique_ptr<Primitive>> &obj,
                   const Ray &r /*, VisibilityTester v*/) override;
-
-private:
-  Point3 from;
 };

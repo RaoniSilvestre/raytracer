@@ -365,7 +365,7 @@ ParamSet ObjectFactory::parseLight(tinyxml2::XMLElement *tag) {
   std::string type(type_raw);
   Color intensity = Color::parseColorString(tag->Attribute("I")),
         scale = Color::parseColorString(tag->Attribute("scale"));
-  if (type == "point") {
+  if (type == "point" || type == "directional") {
     auto from = parseSingleString(tag->Attribute("from"));
     if (type == "directional") {
       auto to = parseSingleString(tag->Attribute("to"));
