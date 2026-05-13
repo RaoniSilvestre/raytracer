@@ -48,7 +48,7 @@ std::optional<Surfel> Sphere::intersect(const Ray &r) const {
   }
 
   Point3 hit_point = r(t);
-  s = {hit_point, hit_point-center, -r.direcao, t};
+  s = {hit_point, hit_point - center, -r.direcao, t};
   return s;
 }
 

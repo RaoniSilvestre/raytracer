@@ -19,7 +19,7 @@ void Material::make_new_named_material(const ParamSet &ps, Scene &s) {
   std::string name = ps.retrieve<std::string>("name");
   std::string type = ps.retrieve<std::string>("type");
   std::shared_ptr<Material> m;
-  if (type == "blinn") {
+  if (type == "blinn" || type == "blinn_phong") {
     m = std::make_shared<BlinnMaterial>(ps);
   } else if (type == "flat") {
     m = std::make_shared<FlatMaterial>(ps);

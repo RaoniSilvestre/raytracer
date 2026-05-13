@@ -1,7 +1,7 @@
 #pragma once
 #include "core/background_color.hpp"
+#include "core/light.hpp"
 #include "core/primitive.hpp"
-#include "light.hpp"
 #include <map>
 #include <memory>
 #include <vector>

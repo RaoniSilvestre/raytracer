@@ -339,6 +339,18 @@ ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag) {
     ps.insert("far_color", far);
 
   } else if (integratortype == "normal_map" || integratortype == "normal") {
+    // nothing to add
+  } else if (integratortype == "blinn" || integratortype == "blinn_phong") {
+    auto depth_raw = tag->Attribute("depth");
+    int depth;
+    if (!depth_raw) {
+      std::cout << "No depth provided, defaulting to 3";
+      depth = 3;
+    } else {
+      depth = std::stoi(depth_raw);
+    }
+    ps.insert("depth", depth);
+
   } else {
     throw(std::runtime_error("Invalid Integrator type"));
   }
@@ -396,12 +408,13 @@ ParamSet ObjectFactory::parseMakeNamedMaterial(tinyxml2::XMLElement *tag) {
     }
     auto color = Color::parseColorString(color_raw);
     ps.insert("color", color);
-  } else if (type == "blinn") {
+  } else if (type == "blinn" || type == "blinn_phong") {
     auto ambient = Color::parseColorString(tag->Attribute("ambient"));
     auto diffuse = Color::parseColorString(tag->Attribute("diffuse"));
     auto specular = Color::parseColorString(tag->Attribute("specular"));
-
+    auto glossiness = std::stod(tag->Attribute("glossiness"));
     ps.insert("ambient", ambient);
+    ps.insert("glossiness", glossiness);
     ps.insert("diffuse", diffuse);
     ps.insert("specular", specular);
   }

@@ -13,4 +13,4 @@ Implementar o Aggregate
 
 ## Relacionado ao projeto 5
 
-
+Implementar os outros tipos de luzes

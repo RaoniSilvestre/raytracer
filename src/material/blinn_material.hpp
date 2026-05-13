@@ -7,11 +7,14 @@
 class BlinnMaterial : public Material {
 public:
   BlinnMaterial(const ParamSet &ps);
-  Color get_color() const;
-  // type="blinn" name="gold"ambient="0.4 0.4 0.4" diffuse ="1 0.65 0.0"
-  // specular ="0.8 0.6 0.2"  glossiness ="256"
-  Vector3 ambient;
-  Vector3 diffuse;
-  Vector3 specular;
+  Color get_color() const override;
+
+  Color ambient;
+  Color diffuse;
+  Color specular;
   double glossiness;
+  Color get_ambient() const override;
+  Color get_diffuse() const override;
+  Color get_specular() const override;
+  double get_glossiness() const override;
 };
