@@ -11,14 +11,18 @@
 #include <utility>
 
 std::optional<Surfel> GeometricPrimitive::intersect(const Ray &r) const {
-  return this->geoshape->intersect(r);
+  auto s = this->geoshape->intersect(r);
+  if (s) {
+    s->set_primitive(this);
+  }
+  return s;
 }
 
 bool GeometricPrimitive::intersect_p(const Ray &r) const {
   return this->geoshape->intersect_p(r);
 }
 
-const Material *GeometricPrimitive::get_material() { return material.get(); }
+Material *GeometricPrimitive::get_material() const { return material.get(); }
 
 std::shared_ptr<Shape> get_shape(const ParamSet &ps) {
   std::string object_type = ps.retrieve<std::string>("type");

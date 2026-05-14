@@ -1,0 +1,68 @@
+<RT3>
+    <lookat look_from="0 0 -15" look_at="0 0 10" up="0 1 0" />
+    <camera type="perspective" fovy="65" />
+    <film type="image" x_res="1600" y_res="1200" filename="cannonball_scene.png" img_type="png" />
+
+    <integrator type="depth" zmin="10" zmax="20" near_color="250 250 250" far_color="0 0 0"/>
+    <world_begin/>
+        <!-- The Background -->
+        <background type="single_color" color="0 0 0" tl="18 10 143" tr="18 10 143" br="153 204 255" />
+
+        <material type="flat" color="253 3 3" /> <!-- Red -->
+        <object type="sphere" radius="1" center="-4 -5.65685 -4"/>
+        <object type="sphere" radius="1" center="-4 -5.65685 -2"/>
+        <object type="sphere" radius="1" center="-2 -5.65685 -4"/>
+        <object type="sphere" radius="1" center="-2 -5.65685 -2"/>
+        <object type="sphere" radius="1" center="-3 -4.24264 -3"/>
+        <object type="sphere" radius="1" center="-4 -5.65685 0"/>
+        <object type="sphere" radius="1" center="-2 -5.65685 0"/>
+        <object type="sphere" radius="1" center="-3 -4.24264 -1"/>
+        <object type="sphere" radius="1" center="0 -5.65685 -4"/>
+        <object type="sphere" radius="1" center="0 -5.65685 -2"/>
+        <object type="sphere" radius="1" center="-1 -4.24264 -3"/>
+        <object type="sphere" radius="1" center="0 -5.65685 0"/>
+        <object type="sphere" radius="1" center="-1 -4.24264 -1"/>
+        <object type="sphere" radius="1" center="-2 -2.82843 -2"/>
+        <object type="sphere" radius="1" center="-4 -5.65685 2"/>
+        <object type="sphere" radius="1" center="-2 -5.65685 2"/>
+        <object type="sphere" radius="1" center="-3 -4.24264 1"/>
+        <object type="sphere" radius="1" center="0 -5.65685 2"/>
+        <object type="sphere" radius="1" center="-1 -4.24264 1"/>
+        <object type="sphere" radius="1" center="-2 -2.82843 0"/>
+        <object type="sphere" radius="1" center="2 -5.65685 -4"/>
+        <object type="sphere" radius="1" center="2 -5.65685 -2"/>
+        <object type="sphere" radius="1" center="1 -4.24264 -3"/>
+        <object type="sphere" radius="1" center="2 -5.65685 0"/>
+        <object type="sphere" radius="1" center="1 -4.24264 -1"/>
+        <object type="sphere" radius="1" center="0 -2.82843 -2"/>
+        <object type="sphere" radius="1" center="2 -5.65685 2"/>
+        <object type="sphere" radius="1" center="1 -4.24264 1"/>
+        <object type="sphere" radius="1" center="0 -2.82843 0"/>
+        <object type="sphere" radius="1" center="-1 -1.41421 -1"/>
+        <object type="sphere" radius="1" center="-4 -5.65685 4"/>
+        <object type="sphere" radius="1" center="-2 -5.65685 4"/>
+        <object type="sphere" radius="1" center="-3 -4.24264 3"/>
+        <object type="sphere" radius="1" center="0 -5.65685 4"/>
+        <object type="sphere" radius="1" center="-1 -4.24264 3"/>
+        <object type="sphere" radius="1" center="-2 -2.82843 2"/>
+        <object type="sphere" radius="1" center="2 -5.65685 4"/>
+        <object type="sphere" radius="1" center="1 -4.24264 3"/>
+        <object type="sphere" radius="1" center="0 -2.82843 2"/>
+        <object type="sphere" radius="1" center="-1 -1.41421 1"/>
+        <object type="sphere" radius="1" center="4 -5.65685 -4"/>
+        <object type="sphere" radius="1" center="4 -5.65685 -2"/>
+        <object type="sphere" radius="1" center="3 -4.24264 -3"/>
+        <object type="sphere" radius="1" center="4 -5.65685 0"/>
+        <object type="sphere" radius="1" center="3 -4.24264 -1"/>
+        <object type="sphere" radius="1" center="2 -2.82843 -2"/>
+        <object type="sphere" radius="1" center="4 -5.65685 2"/>
+        <object type="sphere" radius="1" center="3 -4.24264 1"/>
+        <object type="sphere" radius="1" center="2 -2.82843 0"/>
+        <object type="sphere" radius="1" center="1 -1.41421 -1"/>
+        <object type="sphere" radius="1" center="4 -5.65685 4"/>
+        <object type="sphere" radius="1" center="3 -4.24264 3"/>
+        <object type="sphere" radius="1" center="2 -2.82843 2"/>
+        <object type="sphere" radius="1" center="1 -1.41421 1"/>
+        <object type="sphere" radius="1" center="0 0 0"/>
+    <world_end/>
+</RT3>

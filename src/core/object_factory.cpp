@@ -1,5 +1,5 @@
 #include "object_factory.hpp"
-#include "core/background_color.hpp"
+#include "core/color.hpp"
 #include "core/param_set.hpp"
 #include "math/vector_3.hpp"
 #include "tinyxml2.h"
@@ -301,17 +301,33 @@ ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag) {
 ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
   ParamSet ps;
   auto type_raw = tag->Attribute("type");
-  auto color_raw = tag->Attribute("color");
 
-  if (!type_raw || !color_raw) {
-    throw std::runtime_error("Material sem cor ou tipo válido");
+  if (!type_raw) {
+    throw std::runtime_error("Material tipo válido");
+  }
+  auto type = std::string(type_raw);
+  if (type == "flat") {
+    auto color_raw = tag->Attribute("color");
+    if (!color_raw) {
+      throw std::runtime_error("Material sem cor válida");
+    }
+    auto color = Color::parseColorString(color_raw);
+    ps.insert("color", color);
+  } else if (type == "blinn") {
+    auto ambient = parseSingleString(tag->Attribute("ambient"));
+    auto diffuse = parseSingleString(tag->Attribute("diffuse"));
+    auto specular = parseSingleString(tag->Attribute("specular"));
+    auto glossiness = std::stod(tag->Attribute("glossiness"));
+    // if(!glossiness_raw){
+    //   throw
+    // }
+    ps.insert("glossiness", glossiness);
+    ps.insert("ambient", ambient);
+    ps.insert("diffuse", diffuse);
+    ps.insert("specular", specular);
   }
 
-  auto type = std::string(type_raw);
-  auto color = Color::parseColorString(color_raw);
-
   ps.insert("type", type);
-  ps.insert("color", color);
 
   return ps;
 }
@@ -337,8 +353,85 @@ ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag) {
     ps.insert("far_color", far);
 
   } else if (integratortype == "normal_map" || integratortype == "normal") {
+    // nothing to add
+  } else if (integratortype == "blinn" || integratortype == "blinn_phong") {
+    auto depth_raw = tag->Attribute("depth");
+    int depth;
+    if (!depth_raw) {
+      std::cout << "No depth provided, defaulting to 3";
+      depth = 3;
+    } else {
+      depth = std::stoi(depth_raw);
+    }
+    ps.insert("depth", depth);
+
   } else {
     throw(std::runtime_error("Invalid Integrator type"));
   }
+  return ps;
+}
+ParamSet ObjectFactory::parseLight(tinyxml2::XMLElement *tag) {
+  ParamSet ps;
+  const char *type_raw = tag->Attribute("type");
+  if (!type_raw) {
+    throw std::runtime_error("Tipo não informado na luz");
+  }
+  std::string type(type_raw);
+  Color intensity = Color::parseColorString(tag->Attribute("I")),
+        scale = Color::parseColorString(tag->Attribute("scale"));
+  if (type == "point" || type == "directional") {
+    auto from = parseSingleString(tag->Attribute("from"));
+    if (type == "directional") {
+      auto to = parseSingleString(tag->Attribute("to"));
+      ps.insert("to", to);
+    }
+    ps.insert("from", from);
+  }
+  ps.insert("intensity", intensity);
+  ps.insert("scale", scale);
+  ps.insert("type", type);
+  return ps;
+}
+
+ParamSet ObjectFactory::parseNamedMaterial(tinyxml2::XMLElement *tag) {
+  ParamSet ps;
+  auto name_raw = tag->Attribute("name");
+  if (!name_raw) {
+    throw std::runtime_error("Nome do material inválido");
+  }
+  auto name = std::string(name_raw);
+  ps.insert("name", name);
+
+  return ps;
+}
+ParamSet ObjectFactory::parseMakeNamedMaterial(tinyxml2::XMLElement *tag) {
+  ParamSet ps;
+  auto type_raw = tag->Attribute("type");
+  auto name_raw = tag->Attribute("name");
+  if (!type_raw || !name_raw) {
+    throw std::runtime_error("Material de tipo ou nome inválido");
+  }
+  auto type = std::string(type_raw);
+  auto name = std::string(name_raw);
+  ps.insert("type", type);
+  ps.insert("name", name);
+  if (type == "flat") {
+    auto color_raw = tag->Attribute("color");
+    if (!color_raw) {
+      throw std::runtime_error("Material sem cor válida");
+    }
+    auto color = Color::parseColorString(color_raw);
+    ps.insert("color", color);
+  } else if (type == "blinn" || type == "blinn_phong") {
+    auto ambient = Color::parseColorString(tag->Attribute("ambient"));
+    auto diffuse = Color::parseColorString(tag->Attribute("diffuse"));
+    auto specular = Color::parseColorString(tag->Attribute("specular"));
+    auto glossiness = std::stod(tag->Attribute("glossiness"));
+    ps.insert("ambient", ambient);
+    ps.insert("glossiness", glossiness);
+    ps.insert("diffuse", diffuse);
+    ps.insert("specular", specular);
+  }
+
   return ps;
 }

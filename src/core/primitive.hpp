@@ -6,7 +6,6 @@
 #include "math/vector_3.hpp"
 #include <optional>
 
-
 class Surfel;
 
 class Primitive {
@@ -17,6 +16,5 @@ public:
   virtual Point3 get_center() const = 0;
   virtual bool intersect_p(const Ray &r) const = 0;
   virtual std::optional<Surfel> intersect(const Ray &r) const = 0;
-  virtual const Material *get_material() = 0;
-
+  virtual const Material *get_material() const = 0;
 };

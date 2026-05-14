@@ -80,8 +80,10 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
     auto it = dispatch_map.find(tag_name);
     if (it != dispatch_map.end()) {
       ParamSet ps = ObjectFactory::parse(iter);
-
+      std::cout << ">>> Terminou de parsear elemento\n";
+      
       it->second(ps, scene);
+      
     } else {
       std::cout << ">>> Tag desconhecida: " << tag_name << std::endl;
     }
@@ -91,8 +93,8 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   return {integrator};
 }
 
-void direct_workers(int32_t work_id, u_int32_t threadcount, const Scene &scene,
-                    const std::shared_ptr<Integrator> integrator) {
+void thread_render(int32_t work_id, u_int32_t threadcount, const Scene &scene,
+                   const std::shared_ptr<Integrator> integrator) {
   int32_t Y_RES = static_cast<int32_t>(integrator->camera->film->y_res);
   int32_t X_RES = static_cast<int32_t>(integrator->camera->film->x_res);
   for (int32_t j = Y_RES - 1 - work_id; j >= 0; j -= threadcount) {
@@ -123,12 +125,20 @@ void App::render(const Scene &scene,
   std::cout << "threadcount: " << thread_count << "\n";
   std::vector<std::thread> workers;
   for (int32_t i = 0; i < thread_count; i++) {
-    workers.emplace_back(direct_workers, i, thread_count, std::cref(scene),
+    workers.emplace_back(thread_render, i, thread_count, std::cref(scene),
                          integrator);
   }
   for (auto &t : workers) {
     t.join();
   }
+}
+
+void App::single_thread_render(const Scene &scene,
+                               const std::shared_ptr<Integrator> integrator) {
+  std::cerr << ">>> Começando renderização\n";
+  integrator->preprocess(scene);
+
+  thread_render(0, 1, scene, integrator);
 }
 
 void App::run(const RunningOptions &opts) {
@@ -137,6 +147,10 @@ void App::run(const RunningOptions &opts) {
   ParseReturn p;
   p = App::parse(opts, scene);
   integrator = p.integrator;
-  App::render(scene, integrator);
+  if (opts.singlethread) {
+    App::single_thread_render(scene, integrator);
+  } else {
+    App::render(scene, integrator);
+  }
   integrator->camera->film->export_image();
 }

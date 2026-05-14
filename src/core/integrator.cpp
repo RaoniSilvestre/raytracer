@@ -1,3 +1,4 @@
+#include "integrator/blinn_integrator.hpp"
 #include "integrator/color_depth_integrator.hpp"
 #include "integrator/depth_integrator.hpp"
 #include "integrator/flat_integrator.hpp"
@@ -35,6 +36,11 @@ Integrator::make_integrator(const ParamSet &ps, std::unique_ptr<Camera> c) {
                                                   near, far);
   } else if (integrator_type == "normal" || integrator_type == "normal_map") {
     return std::make_shared<NormalMapIntegrator>(std::move(c));
+  } else if (integrator_type == "normal" || integrator_type == "normal_map") {
+    return std::make_shared<NormalMapIntegrator>(std::move(c));
+  } else if (integrator_type == "blinn" || integrator_type == "blinn_phong") {
+    return std::make_shared<BlinnIntegrator>(std::move(c),
+                                             ps.retrieve<int>("depth"));
   } else
     throw(std::runtime_error("Invalid integrator type"));
 }

@@ -12,7 +12,7 @@ public:
   static void make_object(const ParamSet &ps, Scene &scene);
   bool intersect_p(const Ray &r) const override;
   std::optional<Surfel> intersect(const Ray &r) const override;
-  const Material *get_material() override;
+  Material *get_material() const override;
   Point3 get_center() const override;
 
 private:

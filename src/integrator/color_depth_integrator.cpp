@@ -4,8 +4,9 @@
 #include <algorithm>
 #include <limits>
 
-std::optional<Color> ColorDepthIntegrator::li(const Ray &ray,
-                                              const Scene &scene) const {
+std::optional<Color>
+ColorDepthIntegrator::li(const Ray &ray, const Scene &scene,
+                         [[maybe_unused]] int depth) const {
   std::optional<Color> c = std::nullopt;
   double hit_t = std::numeric_limits<double>::infinity();
   for (const auto &obj : scene.objects) {
@@ -13,7 +14,7 @@ std::optional<Color> ColorDepthIntegrator::li(const Ray &ray,
     if (s && s->t < hit_t) {
       hit_t = s->t;
       double normalized_t = std::clamp((hit_t - zmin) / (zmax - zmin), 0., 1.);
-      c = Color::interpolate(obj->get_material()->color,
+      c = Color::interpolate(obj->get_material()->get_color(),
                              Color::interpolate(near, far, normalized_t),
                              normalized_t);
     }
