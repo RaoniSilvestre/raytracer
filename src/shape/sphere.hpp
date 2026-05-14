@@ -1,4 +1,3 @@
-// shape/sphere.hpp
 #pragma once
 
 #include "core/param_set.hpp"
@@ -9,9 +8,9 @@
 class Sphere : public Shape {
 public:
   bool intersect_p(const Ray &r) const override;
-  
   std::optional<Surfel> intersect(const Ray &r) const override;
-  
+  Point3 get_center() const override;
+
   Sphere(double r, Point3 c) {
     radius = r;
     center = c;
@@ -21,4 +20,5 @@ public:
 
 private:
   double radius;
+  Point3 center;
 };

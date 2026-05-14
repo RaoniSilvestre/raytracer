@@ -11,8 +11,10 @@ class Shape {
 public:
   virtual ~Shape() = default;
 
+  virtual bool intersect_p(const Ray &r) const {
+    return intersect(r).has_value();
+  }
+
   virtual std::optional<Surfel> intersect(const Ray &r) const = 0;
-  
-  virtual bool intersect_p(const Ray &r) const = 0;
-  Point3 center;
+  virtual Point3 get_center() const = 0;
 };

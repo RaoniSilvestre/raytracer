@@ -7,6 +7,8 @@ bool Triangle::intersect_p(const Ray &r) const {
   return intersect(r) != std::nullopt;
 }
 
+Point3 Triangle::get_center() const { return (A + B + C) / 3; }
+
 constexpr double EPSILON = 1e-8;
 
 std::optional<Surfel> Triangle::intersect(const Ray &r) const {
@@ -58,14 +60,12 @@ Triangle::Triangle(const ParamSet &ps) {
   this->A = Am;
   this->B = Bm;
   this->C = Cm;
-  this->center = (Am + Bm + Cm) / 3.;
   norm =
       unit_vector(cross(Cm - Am, Bm - Am)); // the call parameters are reversed
                                             // to use a right hand cross product
 
   std::cout << "Construido um triângulo com A = " << A << ", B = " << B
-            << ", C = " << C << " e Norm = " << norm << " center = " << center
-            << std::endl;
+            << ", C = " << C << " e Norm = " << norm << std::endl;
 }
 
 bool Triangle::is_degenerate() {
