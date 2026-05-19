@@ -19,7 +19,7 @@ PointLight::PointLight(const ParamSet &ps) {
 Color PointLight::sample_li(const Surfel &s, [[maybe_unused]] Vector3 &out,
                             const std::vector<std::unique_ptr<Primitive>> &obj,
                             const Ray &r) {
-  const double epsilon = 0.1;
+  const double epsilon = 0.000001;
   Vector3 dir_light = unit_vector(this->from - s.point);
   Vector3 unit_normal = unit_vector(s.norm);
   Ray light_ray(s.point + dir_light * epsilon, dir_light);
@@ -42,7 +42,9 @@ Color PointLight::sample_li(const Surfel &s, [[maybe_unused]] Vector3 &out,
   Color ks = s.primitive->get_material()->get_specular();
   double n_h_cos = std::max(0., dot(unit_normal, h));
   double glossiness = s.primitive->get_material()->get_glossiness();
-  Color L =
-      kd * intensity * n_l_cos + ks * intensity * pow(n_h_cos, glossiness);
+  Color L = kd * intensity * n_l_cos;
+  if (glossiness > 0) {
+    L = L + ks * intensity * pow(n_h_cos, glossiness);
+  }
   return L;
 }

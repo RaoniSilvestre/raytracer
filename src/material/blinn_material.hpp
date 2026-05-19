@@ -7,14 +7,15 @@
 class BlinnMaterial : public Material {
 public:
   BlinnMaterial(const ParamSet &ps);
-  Color get_color() const override;
-
+  Color mirror;
   Color ambient;
   Color diffuse;
   Color specular;
   double glossiness;
+  Color get_color() const override;
   Color get_ambient() const override;
   Color get_diffuse() const override;
   Color get_specular() const override;
   double get_glossiness() const override;
+  Color get_mirror() const override;
 };

@@ -13,6 +13,7 @@ public:
   virtual Color get_ambient() const { return {0., 0., 0.}; };
   virtual Color get_diffuse() const { return {0., 0., 0.}; };
   virtual Color get_specular() const { return {0., 0., 0.}; };
+  virtual Color get_mirror() const { return {0., 0., 0.}; };
   virtual double get_glossiness() const { return 0.; };
 
   static void make_material(const ParamSet &ps, Scene &s);

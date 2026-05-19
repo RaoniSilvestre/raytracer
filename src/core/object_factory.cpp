@@ -314,13 +314,18 @@ ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
     auto color = Color::parseColorString(color_raw);
     ps.insert("color", color);
   } else if (type == "blinn") {
-    auto ambient = parseSingleString(tag->Attribute("ambient"));
-    auto diffuse = parseSingleString(tag->Attribute("diffuse"));
-    auto specular = parseSingleString(tag->Attribute("specular"));
+    auto ambient = Color::parseColorString(tag->Attribute("ambient"));
+    auto diffuse = Color::parseColorString(tag->Attribute("diffuse"));
+    auto specular = Color::parseColorString(tag->Attribute("specular"));
     auto glossiness = std::stod(tag->Attribute("glossiness"));
-    // if(!glossiness_raw){
-    //   throw
-    // }
+    auto mirror_raw = tag->Attribute("mirror");
+    if(!mirror_raw) 
+      ps.insert("mirror", Color{0.,0.,0.});
+    else{
+      auto mirror = parseSingleString(mirror_raw);
+      ps.insert("mirror", mirror);
+    }
+    
     ps.insert("glossiness", glossiness);
     ps.insert("ambient", ambient);
     ps.insert("diffuse", diffuse);
@@ -427,10 +432,18 @@ ParamSet ObjectFactory::parseMakeNamedMaterial(tinyxml2::XMLElement *tag) {
     auto diffuse = Color::parseColorString(tag->Attribute("diffuse"));
     auto specular = Color::parseColorString(tag->Attribute("specular"));
     auto glossiness = std::stod(tag->Attribute("glossiness"));
+    auto mirror_raw = tag->Attribute("mirror");
+    if(!mirror_raw) 
+      ps.insert("mirror", Color{0.,0.,0.});
+    else{
+      auto mirror = Color::parseColorString(mirror_raw);
+      ps.insert("mirror", mirror);
+    }
     ps.insert("ambient", ambient);
     ps.insert("glossiness", glossiness);
     ps.insert("diffuse", diffuse);
     ps.insert("specular", specular);
+    
   }
 
   return ps;

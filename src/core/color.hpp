@@ -46,6 +46,9 @@ public:
   Color operator*(double r) const {
     return {this->red * r, this->green * r, this->blue * r};
   }
+  // friend Color operator*(double lhs, const Color &rhs) {
+  //   return {rhs.red * lhs, rhs.green * lhs, rhs.blue * lhs};
+  // }
   static double interpolate(const double a, const double b, double t);
   static Color interpolate(const Color &a, const Color &b, const double t);
   static Color parseColorString(const char *color_str);

@@ -13,4 +13,11 @@ Implementar o Aggregate
 
 ## Relacionado ao projeto 5
 
-Implementar os outros tipos de luzes
+Implementar o extra
+
+## Relacionado ao projeto 6
+
+- Implementar o spotlight
+- Fazer a reflexão interagir com o background
+- Implementar as bounding boxes
+- Refatorar para implementar o VisibilityChecker 

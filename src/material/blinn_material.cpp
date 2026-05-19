@@ -8,6 +8,7 @@ BlinnMaterial::BlinnMaterial(const ParamSet &ps) {
   this->ambient = ps.retrieve<Color>("ambient");
   this->diffuse = ps.retrieve<Color>("diffuse");
   this->specular = ps.retrieve<Color>("specular");
+  this->mirror = ps.retrieve<Color>("mirror");
 
   this->glossiness = ps.retrieve<double>("glossiness");
   this->type = ps.retrieve<std::string>("type");
@@ -26,4 +27,7 @@ double BlinnMaterial::get_glossiness() const { return glossiness; }
 
 Color BlinnMaterial::get_specular() const {
   return {specular.red, specular.green, specular.blue};
+}
+Color BlinnMaterial::get_mirror() const {
+  return {mirror.red, mirror.green, mirror.blue};
 }
