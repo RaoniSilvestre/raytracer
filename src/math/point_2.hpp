@@ -124,6 +124,4 @@ inline Point2 &Point2::operator/=(const double t) {
 
 inline Point2 unit_vector(const Point2 &v) { return v / v.length(); }
 
-using Point3 = Point2;
-
 #endif
