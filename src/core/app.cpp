@@ -7,6 +7,7 @@
 #include "object_factory.hpp"
 #include "tinyxml2.h"
 #include <cassert>
+#include <chrono>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -81,9 +82,9 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
     if (it != dispatch_map.end()) {
       ParamSet ps = ObjectFactory::parse(iter);
       std::cout << ">>> Terminou de parsear elemento\n";
-      
+
       it->second(ps, scene);
-      
+
     } else {
       std::cout << ">>> Tag desconhecida: " << tag_name << std::endl;
     }
@@ -147,10 +148,21 @@ void App::run(const RunningOptions &opts) {
   ParseReturn p;
   p = App::parse(opts, scene);
   integrator = p.integrator;
+
+  auto start_time = std::chrono::steady_clock::now();
+
   if (opts.singlethread) {
     App::single_thread_render(scene, integrator);
   } else {
     App::render(scene, integrator);
   }
+
+  auto end_time = std::chrono::steady_clock::now();
+
+  std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+
+  std::cout << ">>> Tempo de renderização (Wall time): "
+            << elapsed_seconds.count() << " segundos\n";
+
   integrator->camera->film->export_image();
 }

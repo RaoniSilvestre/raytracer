@@ -68,6 +68,9 @@ private:
   Vector3 normA() const { return mesh->normals[n[0]]; };
   Vector3 normB() const { return mesh->normals[n[1]]; };
   Vector3 normC() const { return mesh->normals[n[2]]; };
+  Point2 uvA() const { return mesh->uvcoords[uv[0]]; };
+  Point2 uvB() const { return mesh->uvcoords[uv[1]]; };
+  Point2 uvC() const { return mesh->uvcoords[uv[2]]; };
 
 public:
   Point3 get_center() const override;

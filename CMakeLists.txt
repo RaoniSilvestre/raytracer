@@ -24,7 +24,7 @@ FetchContent_MakeAvailable(tinyxml2)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
   add_compile_options(
         # -Wno-error=old-style-cast
-        -g
+        # -g
         -Wall
         -Wextra
         -Wpedantic
@@ -36,7 +36,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
         -Woverloaded-virtual
         -Wconversion
         -Wsign-conversion
-        # -O3
+        -O3
     )
 endif()
 

@@ -50,9 +50,24 @@ std::optional<Surfel> Triangle::intersect(const Ray &r) const {
   }
 
   if (t > EPSILON) {
-    // TODO: Rever isso aqui viuu
-    Vector3 outg = r.direcao - 2.0 * dot(r.direcao, normA()) * normA();
-    return Surfel(r(t), normA(), outg, t);
+    // Calcula a terceira coordenada baricêntrica
+    double alpha = 1.0 - beta - gamma;
+
+    // Interpola a normal e garante que ela continue sendo um vetor unitário
+    Vector3 interp_normal = alpha * normA() + beta * normB() + gamma * normC();
+
+    interp_normal = unit_vector(interp_normal);
+
+    // Opcional, mas útil: Interpola as coordenadas UV da mesma forma
+    Point2 interp_uv = alpha * uvA() + beta * uvB() + gamma * uvC();
+
+    // Recalcula o vetor de saída (bounce/reflexão) usando a nova normal
+    // interpolada
+    Vector3 outg =
+        r.direcao - 2.0 * dot(r.direcao, interp_normal) * interp_normal;
+
+    // Retorna o Surfel com a normal correta interpolada
+    return Surfel(r(t), interp_normal, outg, t);
   }
 
   return std::nullopt;
