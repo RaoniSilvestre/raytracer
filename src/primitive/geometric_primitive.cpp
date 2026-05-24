@@ -4,11 +4,11 @@
 #include "shape/plane.hpp"
 #include "shape/sphere.hpp"
 #include "shape/triangle.hpp"
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 std::optional<Surfel> GeometricPrimitive::intersect(const Ray &r) const {
   auto s = this->geoshape->intersect(r);
@@ -24,32 +24,29 @@ bool GeometricPrimitive::intersect_p(const Ray &r) const {
 
 Material *GeometricPrimitive::get_material() const { return material.get(); }
 
-std::shared_ptr<Shape> get_shape(const ParamSet &ps) {
+std::vector<std::shared_ptr<Shape>> get_shapes(const ParamSet &ps) {
   std::string object_type = ps.retrieve<std::string>("type");
-  if (object_type == "sphere") {
-    return std::make_shared<Sphere>(ps);
-  } else if (object_type == "triangle") {
-    auto shared_tri = std::make_shared<Triangle>(ps);
-    if (shared_tri->is_degenerate()) {
-      std::cout << "degenerate triangle\n";
-      throw std::runtime_error("Triangulo degenerado");
-    }
 
-    return shared_tri;
+  if (object_type == "sphere") {
+    return {std::make_shared<Sphere>(ps)};
+  } else if (object_type == "trianglemesh") {
+    bool flip_normals = false;
+    return create_triangle_mesh_shape(flip_normals, ps);
   } else if (object_type == "plane") {
-    return std::make_shared<Plane>(ps);
+    return {std::make_shared<Plane>(ps)};
   }
 
   throw std::runtime_error("Objeto não parseável");
 }
 
 void GeometricPrimitive::make_object(const ParamSet &ps, Scene &scene) {
-  std::shared_ptr<Shape> shape = get_shape(ps);
+  std::vector<std::shared_ptr<Shape>> shapes = get_shapes(ps);
 
-  auto geometric_primitive =
-      std::make_unique<GeometricPrimitive>(scene.material, shape);
-
-  scene.objects.push_back(std::move(geometric_primitive));
+  for (const auto &shape : shapes) {
+    auto geometric_primitive =
+        std::make_unique<GeometricPrimitive>(scene.material, shape);
+    scene.objects.push_back(std::move(geometric_primitive));
+  }
 }
 
 Point3 GeometricPrimitive::get_center() const { return geoshape->get_center(); }

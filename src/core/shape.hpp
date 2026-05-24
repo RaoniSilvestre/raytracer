@@ -1,7 +1,6 @@
 // core/shape.hpp
 #pragma once
 
-#include "core/param_set.hpp"
 #include "core/ray.hpp"
 #include "core/scene.hpp"
 #include "core/surfel.hpp"

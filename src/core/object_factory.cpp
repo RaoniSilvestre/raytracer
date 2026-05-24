@@ -291,8 +291,33 @@ ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag) {
 
     ps.insert("point", point);
     ps.insert("normal", normal);
+  } else if (type_ == "trianglemesh") {
+    // 1. Arquivo OBJ (geralmente o principal)
+    auto filename_raw = tag->Attribute("filename");
+    if (filename_raw) {
+      ps.insert("filename", std::string(filename_raw));
+    } else {
+      // TODO: Caso não tenha filename, é pra pegar as coisas que teriam no .obj
+      // pela tag.
+      ps.insert("filename", std::string(""));
+    }
+
+    auto bfc_raw = tag->Attribute("backface_cull");
+    if (bfc_raw) {
+      ps.insert("backface_cull", std::string(bfc_raw));
+    }
+
+    auto rvo_raw = tag->Attribute("reverse_vertex_order");
+    if (rvo_raw) {
+      ps.insert("reverse_vertex_order", std::string(rvo_raw));
+    }
+
+    auto cn_raw = tag->Attribute("compute_normals");
+    if (cn_raw) {
+      ps.insert("compute_normals", std::string(cn_raw));
+    }
   } else {
-    throw std::runtime_error("Objeto não parseável");
+    throw std::runtime_error("Objeto não suportado.");
   }
 
   return ps;
@@ -319,13 +344,13 @@ ParamSet ObjectFactory::parseMaterial(tinyxml2::XMLElement *tag) {
     auto specular = Color::parseColorString(tag->Attribute("specular"));
     auto glossiness = std::stod(tag->Attribute("glossiness"));
     auto mirror_raw = tag->Attribute("mirror");
-    if(!mirror_raw) 
-      ps.insert("mirror", Color{0.,0.,0.});
-    else{
+    if (!mirror_raw)
+      ps.insert("mirror", Color{0., 0., 0.});
+    else {
       auto mirror = parseSingleString(mirror_raw);
       ps.insert("mirror", mirror);
     }
-    
+
     ps.insert("glossiness", glossiness);
     ps.insert("ambient", ambient);
     ps.insert("diffuse", diffuse);
@@ -433,9 +458,9 @@ ParamSet ObjectFactory::parseMakeNamedMaterial(tinyxml2::XMLElement *tag) {
     auto specular = Color::parseColorString(tag->Attribute("specular"));
     auto glossiness = std::stod(tag->Attribute("glossiness"));
     auto mirror_raw = tag->Attribute("mirror");
-    if(!mirror_raw) 
-      ps.insert("mirror", Color{0.,0.,0.});
-    else{
+    if (!mirror_raw)
+      ps.insert("mirror", Color{0., 0., 0.});
+    else {
       auto mirror = Color::parseColorString(mirror_raw);
       ps.insert("mirror", mirror);
     }
@@ -443,7 +468,6 @@ ParamSet ObjectFactory::parseMakeNamedMaterial(tinyxml2::XMLElement *tag) {
     ps.insert("glossiness", glossiness);
     ps.insert("diffuse", diffuse);
     ps.insert("specular", specular);
-    
   }
 
   return ps;
