@@ -4,13 +4,9 @@
 #include "core/ray.hpp"
 #include "core/scene.hpp"
 #include "core/surfel.hpp"
+#include "core/bounding_box.hpp"
 #include "math/vector_3.hpp"
 #include <optional>
-
-struct BoundingBox{
-  Point3 lower_limit;
-  Point3 upper_limit;
-};
 
 class Shape {
 protected:
