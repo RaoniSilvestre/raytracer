@@ -409,11 +409,17 @@ ParamSet ObjectFactory::parseLight(tinyxml2::XMLElement *tag) {
   std::string type(type_raw);
   Color intensity = Color::parseColorString(tag->Attribute("I")),
         scale = Color::parseColorString(tag->Attribute("scale"));
-  if (type == "point" || type == "directional") {
+  if (type == "point" || type == "directional" || type == "spot") {
     auto from = parseSingleString(tag->Attribute("from"));
-    if (type == "directional") {
+    if (type == "directional" || type == "spot") {
       auto to = parseSingleString(tag->Attribute("to"));
       ps.insert("to", to);
+      if(type == "spot"){
+        auto cutoff = std::stod(tag->Attribute("cutoff"));
+        auto falloff = std::stod(tag->Attribute("falloff"));
+        ps.insert("cutoff", cutoff);
+        ps.insert("falloff", falloff);
+      }
     }
     ps.insert("from", from);
   }

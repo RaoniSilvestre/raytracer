@@ -59,7 +59,7 @@ std::optional<Surfel> Triangle::intersect(const Ray &r) const {
     interp_normal = unit_vector(interp_normal);
 
     // Opcional, mas útil: Interpola as coordenadas UV da mesma forma
-    Point2 interp_uv = alpha * uvA() + beta * uvB() + gamma * uvC();
+    [[maybe_unused]]Point2 interp_uv = alpha * uvA() + beta * uvB() + gamma * uvC();
 
     // Recalcula o vetor de saída (bounce/reflexão) usando a nova normal
     // interpolada

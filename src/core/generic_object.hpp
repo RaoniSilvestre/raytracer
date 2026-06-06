@@ -11,5 +11,5 @@ template <typename T> class ValueType : public GenericObject {
 public:
   T value;
 
-  ValueType<T>(T val) : value(val) {}
+  ValueType(T val) : value(val) {}
 };

@@ -27,6 +27,6 @@
         <!-- Objects -->
         <!-- <named_material name="gold"/> -->
         <named_material name="jade"/>
-        <object type="trianglemesh" filename="./scenes/teapot_scene/teapot-low.obj" backface_cull="off" reverse_vertex_order="false" compute_normals="true"/>
+        <object type="trianglemesh" filename="./scenes/teapot_scene/teapot.obj" backface_cull="off" reverse_vertex_order="false" compute_normals="true"/>
     <world_end/>
 </RT3>

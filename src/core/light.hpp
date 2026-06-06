@@ -21,6 +21,7 @@ protected:
     POINT,
     AMBIENT,
     DIRECTIONAL,
+    SPOT,
   };
   light_type lt;
   Color intensity;

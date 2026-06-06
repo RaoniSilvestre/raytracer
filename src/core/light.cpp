@@ -3,6 +3,7 @@
 #include "core/scene.hpp"
 #include "lights/ambient_light.hpp"
 #include "lights/direct_light.hpp"
+#include "lights/spot_light.hpp"
 #include "lights/point_light.hpp"
 #include "math/vector_3.hpp"
 #include <memory>
@@ -20,7 +21,11 @@ void Light::make_light(const ParamSet &ps, Scene &s) {
   } else if (type == "ambient") {
     auto ptr = std::make_unique<AmbientLight>(ps);
     s.lights.push_back(std::move(ptr));
-  } else {
+  } else if(type == "spot"){
+    auto ptr = std::make_unique<SpotLight>(ps);
+    s.lights.push_back(std::move(ptr));
+  }
+  else {
     std::cout << "ignoring temporary unsuported light type\n";
   }
 }
