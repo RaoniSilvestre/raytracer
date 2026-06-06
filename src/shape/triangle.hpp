@@ -8,6 +8,8 @@
 #include "core/shape.hpp"
 #include "math/point_2.hpp"
 #include "math/vector_3.hpp"
+#include <cstddef>
+#include <limits>
 #include <memory>
 
 /// This struct implements an indexd triangle mesh database.
@@ -83,9 +85,22 @@ public:
     v = &mesh->vertex_indices[3 * tri_id];
     n = &mesh->normal_indices[3 * tri_id];
     uv = &mesh->uvcoord_indices[3 * tri_id];
+    constexpr double inf = std::numeric_limits<double>::infinity();
+    double minx = inf, miny=inf, minz=inf;
+    double maxx = -inf, maxy=-inf, maxz=-inf;
+    for(size_t i = 0;i<=2;i++){
+      minx=std::min(minx, mesh->vertices[v[i]].x());
+      miny=std::min(miny, mesh->vertices[v[i]].y());
+      minz=std::min(minz, mesh->vertices[v[i]].z());
+
+      maxx=std::max(maxx, mesh->vertices[v[i]].x());
+      maxy=std::max(maxy, mesh->vertices[v[i]].y());
+      maxz=std::max(maxz, mesh->vertices[v[i]].z());
+    } 
+    bounds.lower_limit = {minx, miny, minz};
+    bounds.upper_limit = {maxx, maxy, maxz};
+    
   }
-  /// Return the triangle's bounding box.
-  // Bounds3f object_bound() const;
 
   bool intersect_p(const Ray &r) const override;
   std::optional<Surfel> intersect(const Ray &r) const override;

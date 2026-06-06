@@ -60,4 +60,8 @@ Sphere::Sphere(const ParamSet &ps) {
 
   radius = r;
   center = c;
+
+  bounds.lower_limit = {center.x() - r, center.y()-r,center.z()-r};
+  bounds.upper_limit = {center.x() + r, center.y()+r,center.z()+r};
+
 }

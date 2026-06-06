@@ -2,6 +2,7 @@
 
 #include "shape/plane.hpp"
 #include "core/surfel.hpp"
+#include <limits>
 #include <optional>
 
 std::optional<Surfel> Plane::intersect(const Ray &r) const {
@@ -30,6 +31,9 @@ std::optional<Surfel> Plane::intersect(const Ray &r) const {
 Plane::Plane(const ParamSet &ps) {
   point = ps.retrieve<Point3>("point");
   normal = ps.retrieve<Vector3>("normal");
+  constexpr double inf = std::numeric_limits<double>::infinity();
+  bounds.lower_limit = {-inf, -inf, -inf};
+  bounds.upper_limit = {inf, inf, inf};
 }
 
 Point3 Plane::get_center() const { return this->point; }
