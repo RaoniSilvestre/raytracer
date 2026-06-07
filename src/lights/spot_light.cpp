@@ -24,7 +24,7 @@ inline double deg_to_rad(double deg) {
   return (M_PI * deg) / 180.;
 }
 Color SpotLight::sample_li(const Surfel &s, [[maybe_unused]] Vector3 &out,
-                            const std::vector<std::unique_ptr<Primitive>> &obj,
+                            const std::shared_ptr<Primitive> aggregate,
                             const Ray &r) {
   const double epsilon = 0.000001;
   Vector3 dir_light = unit_vector(this->from - s.point);
@@ -41,15 +41,9 @@ Color SpotLight::sample_li(const Surfel &s, [[maybe_unused]] Vector3 &out,
   }
   double hit_t = (s.point - this->from).length();
   //checking for obstruction
-  for (auto &o : obj) {
-    if (o.get() == s.primitive) {
-      // std::cout << "same object\n";
-      continue;
-    }
-    auto surface = o->intersect(light_ray);
-    if (surface && surface->t < hit_t) {
-      return {0., 0., 0.}; // black
-    }
+  auto surface = aggregate->intersect(light_ray);
+  if (surface && surface->t < hit_t) {
+    return {0., 0., 0.}; // black
   }
   double n_l_cos = std::max(0., dot(dir_light, unit_normal));
   Color kd = s.primitive->get_material()->get_diffuse();

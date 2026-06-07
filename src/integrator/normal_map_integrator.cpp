@@ -11,15 +11,13 @@ std::optional<Color> NormalMapIntegrator::li(const Ray &ray, const Scene &scene,
                                              [[maybe_unused]]int depth) const {
   std::optional<Color> c = std::nullopt;
   double hit_t = std::numeric_limits<double>::infinity();
-  for (const auto &obj : scene.objects) {
-    auto s = obj->intersect(ray);
+    auto s = scene.objects_aggregate->intersect(ray);
     if (s && s->t < hit_t) {
       hit_t = s->t;
       Vector3 norm = unit_vector(s->norm);
       norm = convert_vec_into_positive(norm);
       c = convert_vec_into_color(norm);
     }
-  }
 
   return c;
 }

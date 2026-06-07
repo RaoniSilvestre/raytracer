@@ -22,7 +22,7 @@ private:
   static ParamSet parseLight(tinyxml2::XMLElement *tag);
   static ParamSet parseNamedMaterial(tinyxml2::XMLElement *tag);
   static ParamSet parseMakeNamedMaterial(tinyxml2::XMLElement *tag);
-
+  static ParamSet parseAggregate(tinyxml2::XMLElement *tag);
   static inline const std::unordered_map<std::string, TagParser>
       param_set_parser_map = {
           {"background", &ObjectFactory::parseBackground},
@@ -34,7 +34,8 @@ private:
           {"material", &ObjectFactory::parseMaterial},
           {"light_source", &ObjectFactory::parseLight},
           {"named_material", &ObjectFactory::parseNamedMaterial},
-          {"make_named_material", &ObjectFactory::parseMakeNamedMaterial}
+          {"make_named_material", &ObjectFactory::parseMakeNamedMaterial},
+          {"aggregate", &ObjectFactory::parseAggregate}
 
   };
 };

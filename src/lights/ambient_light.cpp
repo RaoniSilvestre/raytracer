@@ -17,7 +17,7 @@ AmbientLight::AmbientLight(const ParamSet &ps) {
 }
 Color AmbientLight::sample_li(
     const Surfel &s, [[maybe_unused]] Vector3 &out,
-    [[maybe_unused]] const std::vector<std::unique_ptr<Primitive>> &obj,
+    [[maybe_unused]] const std::shared_ptr<Primitive> aggregate,
     [[maybe_unused]] const Ray &r) {
 
   Color L = intensity * s.primitive->get_material()->get_ambient();

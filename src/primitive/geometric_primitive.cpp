@@ -44,7 +44,7 @@ void GeometricPrimitive::make_object(const ParamSet &ps, Scene &scene) {
 
   for (const auto &shape : shapes) {
     auto geometric_primitive =
-        std::make_unique<GeometricPrimitive>(scene.material, shape);
+          std::make_unique<GeometricPrimitive>(scene.material, shape);
     scene.objects.push_back(std::move(geometric_primitive));
   }
 }

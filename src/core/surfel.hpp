@@ -14,7 +14,7 @@ public:
   // const Primitive* prim = nullptr;
   void set_primitive(const Primitive *p) { primitive = p; }
   Surfel(const Point3 &p, const Vector3 &n, const Vector3 &o,
-         double dist /*const Point2 &param,*/ /*const Primitive* pr*/)
+         double dist /*const Point2 &param,*/)
       : point{p}, norm{n}, outg{o},
         t{dist} /*parametric{param},*/ /*(prim{pr}*/ {}
 };

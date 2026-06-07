@@ -9,6 +9,7 @@ class Light;
 class Scene {
 public:
   std::unique_ptr<BackgroundColor> background;
+  std::shared_ptr<Primitive> objects_aggregate;
   std::vector<std::unique_ptr<Primitive>> objects;
   std::map<std::string, std::shared_ptr<Material>> named_materials;
   std::shared_ptr<Material> material;

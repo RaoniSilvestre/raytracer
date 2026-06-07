@@ -13,17 +13,15 @@ std::optional<Color> BlinnIntegrator::li(const Ray &ray, const Scene &scene,
   Vector3 reflecting;
   Point3 hit_point;
   Color reflect_coef;
-  for (const auto &obj : scene.objects) {
-    auto s = obj->intersect(ray);
-    if (s && s->t < hit_t) {
-      c = {0., 0., 0.};
-      hit_t = s->t;
-      hit_point = s->point;
-      reflecting = ray.direcao - 2.*(dot(ray.direcao, s->norm))*s->norm;
-      reflect_coef = obj->get_material()->get_mirror();
-      for (auto &l : scene.lights) {
-        c = c.value() + l->sample_li(s.value(), reflecting, scene.objects, ray);
-      }
+  auto s = scene.objects_aggregate->intersect(ray);
+  if (s && s->t < hit_t) {
+    c = {0., 0., 0.};
+    hit_t = s->t;
+    hit_point = s->point;
+    reflecting = ray.direcao - 2.*(dot(ray.direcao, s->norm))*s->norm;
+    reflect_coef = s->primitive->get_material()->get_mirror();
+    for (auto &l : scene.lights) {
+      c = c.value() + l->sample_li(s.value(), reflecting, scene.objects_aggregate, ray);
     }
   }
   if (c && depth < max_depth) {

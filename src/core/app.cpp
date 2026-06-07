@@ -6,6 +6,7 @@
 #include "core/param_set.hpp"
 #include "object_factory.hpp"
 #include "tinyxml2.h"
+#include "primitive/aggregate_primitive.hpp"
 #include <cassert>
 #include <chrono>
 #include <cstdint>
@@ -45,7 +46,7 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   auto camera_xml = rt3_xml->FirstChildElement("camera");
   auto lookat_xml = rt3_xml->FirstChildElement("lookat");
   auto integrator_xml = rt3_xml->FirstChildElement("integrator");
-
+  auto aggregate_xml = rt3_xml->FirstChildElement("aggregator");
   assert(camera_xml != nullptr);
   assert(film_xml != nullptr);
   assert(lookat_xml != nullptr);
@@ -55,6 +56,7 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   auto camera_ps = ObjectFactory::parse(camera_xml);
   auto lookat_ps = ObjectFactory::parse(lookat_xml);
   auto integrator_ps = ObjectFactory::parse(integrator_xml);
+  auto aggregate_ps = ObjectFactory::parse(aggregate_xml);
 
   auto film = std::make_unique<Film>(film_ps);
   auto lookat = LookAt(lookat_ps);
@@ -88,9 +90,10 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
     } else {
       std::cout << ">>> Tag desconhecida: " << tag_name << std::endl;
     }
-
+    
     iter = iter->NextSiblingElement();
   }
+  AggregatePrimitive::make_aggregate(aggregate_ps, scene);
   return {integrator};
 }
 
@@ -100,8 +103,10 @@ void thread_render(int32_t work_id, u_int32_t threadcount, const Scene &scene,
   int32_t X_RES = static_cast<int32_t>(integrator->camera->film->x_res);
   for (int32_t j = Y_RES - 1 - work_id; j >= 0; j -= threadcount) {
     const double y_proportion = double(j) / double(Y_RES);
+    
     for (int i = 0; i < X_RES; i++) {
       const double x_proportion = double(i) / double(X_RES);
+
       auto ray = integrator->camera->generate_ray(static_cast<u_int32_t>(i),
                                                   static_cast<u_int32_t>(j));
       auto p = Point2{static_cast<u_int32_t>(i), static_cast<u_int32_t>(j)};

@@ -19,5 +19,8 @@ public:
   }
   virtual std::optional<Surfel> intersect(const Ray &r) const = 0;
   virtual Point3 get_center() const = 0;
-  virtual BoundingBox get_bounding_box() const = 0;
+  BoundingBox get_bounding_box() const{
+    return bounds;
+  }
+
 };

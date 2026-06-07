@@ -19,23 +19,17 @@ DirectLight::DirectLight(const ParamSet &ps) {
   this->lt = light_type::DIRECTIONAL;
 }
 Color DirectLight::sample_li(const Surfel &s, [[maybe_unused]] Vector3 &out,
-                             const std::vector<std::unique_ptr<Primitive>> &obj,
+                             const std::shared_ptr<Primitive> aggregate,
                              const Ray &r) {
   const double epsilon = 0.000001;
 
   Vector3 unit_normal = unit_vector(s.norm);
   Ray light_ray(s.point + -(this->direction) * epsilon, -(this->direction));
   double hit_t = std::numeric_limits<double>::infinity();
-  for (auto &o : obj) {
-    if (o.get() == s.primitive) {
-      // std::cout << "same object\n";
-      continue;
-    }
-    auto surface = o->intersect(light_ray);
-    if (surface && surface->t < hit_t) {
-      // hit_t = surface->t;
-      return {0., 0., 0.}; // black
-    }
+  auto surface = aggregate->intersect(light_ray);
+  if (surface && surface->t < hit_t) {
+    // hit_t = surface->t;
+    return {0., 0., 0.}; // black
   }
   double n_l_cos = std::max(0., dot(-(this->direction), unit_normal));
   Color kd = s.primitive->get_material()->get_diffuse();

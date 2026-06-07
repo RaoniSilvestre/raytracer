@@ -7,6 +7,6 @@ class AmbientLight : public Light {
 public:
   AmbientLight(const ParamSet &ps);
   Color sample_li(const Surfel &s, Vector3 &dir,
-                  const std::vector<std::unique_ptr<Primitive>> &obj,
+                  const std::shared_ptr<Primitive> aggregator,
                   const Ray &r /*, VisibilityTester v*/) override;
 };
