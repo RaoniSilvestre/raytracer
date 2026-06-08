@@ -1,5 +1,3 @@
-#pragma once
-
 #include "primitive/aggregate_primitive.hpp"
 #include "aggregates/aggregate_list.hpp"
 #include <memory>

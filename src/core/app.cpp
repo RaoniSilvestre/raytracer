@@ -47,6 +47,7 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   auto lookat_xml = rt3_xml->FirstChildElement("lookat");
   auto integrator_xml = rt3_xml->FirstChildElement("integrator");
   auto aggregate_xml = rt3_xml->FirstChildElement("aggregator");
+
   assert(camera_xml != nullptr);
   assert(film_xml != nullptr);
   assert(lookat_xml != nullptr);
@@ -56,7 +57,7 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
   auto camera_ps = ObjectFactory::parse(camera_xml);
   auto lookat_ps = ObjectFactory::parse(lookat_xml);
   auto integrator_ps = ObjectFactory::parse(integrator_xml);
-  auto aggregate_ps = ObjectFactory::parse(aggregate_xml);
+  auto aggregate_ps = ObjectFactory::parseAggregate(aggregate_xml);
 
   auto film = std::make_unique<Film>(film_ps);
   auto lookat = LookAt(lookat_ps);
@@ -75,6 +76,7 @@ ParseReturn App::parse(const RunningOptions &opts, Scene &scene) {
     if (tag_name == "world_end") {
       std::cout << ">>> World end encontrado. Finalizando parsing."
                 << std::endl;
+      break;
       return {integrator};
     }
 

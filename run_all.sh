@@ -19,7 +19,7 @@ find "$SCENES_DIR" -type f -name "*.xml" | while read -r scene; do
     
     # Skip helper XML files that aren't standalone scenes
     filename=$(basename "$scene")
-    if [[ "$filename" == "materials.xml" || "$filename" == "geometry.xml"]]; then
+    if [[ "$filename" == "materials.xml" || "$filename" == "geometry.xml" || "$filename" == "spheres.xml" ]]; then
         echo "Skipping component file: $scene"
         continue
     fi

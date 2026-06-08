@@ -4,6 +4,7 @@
 #include "shape/plane.hpp"
 #include "shape/sphere.hpp"
 #include "shape/triangle.hpp"
+#include "shape/triangle_old.hpp"
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -34,6 +35,9 @@ std::vector<std::shared_ptr<Shape>> get_shapes(const ParamSet &ps) {
     return create_triangle_mesh_shape(flip_normals, ps);
   } else if (object_type == "plane") {
     return {std::make_shared<Plane>(ps)};
+  }
+  else if(object_type == "triangle"){
+    return {std::make_shared<old_tri::Triangle>(ps)};
   }
 
   throw std::runtime_error("Objeto não parseável");

@@ -1,4 +1,3 @@
-#pragma once
 #include "core/bounding_box.hpp"
 
 bool BoundingBox::intersect_p(const Ray& r, Point3& hit1, Point3& hit2){

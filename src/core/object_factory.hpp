@@ -8,8 +8,11 @@ class ObjectFactory {
 public:
   // fn(XMLElement) -> Arc<GenericObject>
   using TagParser = std::function<ParamSet(tinyxml2::XMLElement *)>;
-
+  
   static ParamSet parse(tinyxml2::XMLElement *tag);
+  static ParamSet parseAggregate(tinyxml2::XMLElement *tag);//this function being public 
+  // is a placeholder janky workaround to make the parseAggregate work with default values
+  //knowing how development is gonna turn out. i know this is going to stay here until the end of time
 
 private:
   static ParamSet parseFilm(tinyxml2::XMLElement *tag);
@@ -22,7 +25,6 @@ private:
   static ParamSet parseLight(tinyxml2::XMLElement *tag);
   static ParamSet parseNamedMaterial(tinyxml2::XMLElement *tag);
   static ParamSet parseMakeNamedMaterial(tinyxml2::XMLElement *tag);
-  static ParamSet parseAggregate(tinyxml2::XMLElement *tag);
   static inline const std::unordered_map<std::string, TagParser>
       param_set_parser_map = {
           {"background", &ObjectFactory::parseBackground},
@@ -35,7 +37,7 @@ private:
           {"light_source", &ObjectFactory::parseLight},
           {"named_material", &ObjectFactory::parseNamedMaterial},
           {"make_named_material", &ObjectFactory::parseMakeNamedMaterial},
-          {"aggregate", &ObjectFactory::parseAggregate}
+          {"aggregator", &ObjectFactory::parseAggregate}
 
   };
 };

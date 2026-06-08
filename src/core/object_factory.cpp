@@ -402,15 +402,22 @@ ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag) {
 }
 
 ParamSet ObjectFactory::parseAggregate(tinyxml2::XMLElement *tag){
-  auto type_raw = tag->Attribute("type");
   ParamSet ps;
+  if(!tag){
+    ps.insert("type", std::string("list"));
+    // ps.insert("type", "bvh");
+    // ps.insert("max_prim_per_node", uint32_t(4));
+    // ps.insert("split_method", std::string("middle"));
+    return ps;
+  }
+  auto type_raw = tag->Attribute("type");
   std::string type_str( type_raw ? type_raw : "bvh");//default value
   if(type_str != "list"){
     ps.insert("type", type_str);
     if(type_str == "bvh"){
       auto method_raw = tag->Attribute("split_method"); 
       std::string split_method(method_raw ? method_raw : "middle");
-
+      
       auto max_per_node_raw = tag->Attribute("max_prims_per_node");
       size_t max_per_node(max_per_node_raw ? std::stoul(max_per_node_raw) : 4);
       
@@ -418,7 +425,8 @@ ParamSet ObjectFactory::parseAggregate(tinyxml2::XMLElement *tag){
     }
   }
   else{
-    ps.insert("type", "list");
+    std::cout << ">>> Parseando o aggregator\n";
+    ps.insert("type", std::string("list"));
   }
   return ps;
 }
