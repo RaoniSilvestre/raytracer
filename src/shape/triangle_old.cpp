@@ -3,15 +3,15 @@
 #include "math/vector_3.hpp"
 #include <optional>
 
-bool Triangle::intersect_p(const Ray &r) const {
+bool old_tri::Triangle::intersect_p(const Ray &r) const {
   return intersect(r) != std::nullopt;
 }
 
-Point3 Triangle::get_center() const { return (A + B + C) / 3; }
+Point3 old_tri::Triangle::get_center() const { return (A + B + C) / 3; }
 
 constexpr double EPSILON = 1e-8;
 
-std::optional<Surfel> Triangle::intersect(const Ray &r) const {
+std::optional<Surfel> old_tri::Triangle::intersect(const Ray &r) const {
   // Eixo X nas coordenadas baricêntricas (Edge 1)
   Vector3 edge1 = B - A;
   // Eixo Y nas coordenadas baricêntricas (Edge 2)
@@ -51,7 +51,7 @@ std::optional<Surfel> Triangle::intersect(const Ray &r) const {
   return std::nullopt;
 }
 
-Triangle::Triangle(const ParamSet &ps) {
+old_tri::Triangle::Triangle(const ParamSet &ps) {
   auto Am = ps.retrieve<Point3>("A");
   auto Bm = ps.retrieve<Point3>("B");
   auto Cm = ps.retrieve<Point3>("C");
@@ -67,6 +67,6 @@ Triangle::Triangle(const ParamSet &ps) {
             << ", C = " << C << " e Norm = " << norm << std::endl;
 }
 
-bool Triangle::is_degenerate() {
+bool old_tri::Triangle::is_degenerate() {
   return norm.x() == 0. && norm.y() == 0. && norm.z() == 0.;
 }
