@@ -26,9 +26,11 @@ private:
     BVHNode(std::vector<size_t> &father_indexes, size_t begin, size_t end);
     BVHNode(const std::vector<std::unique_ptr<Primitive>> &obj);
   };
+
   friend bool x_axis_index_cmp(const size_t a, const size_t b);
   friend bool y_axis_index_cmp(const size_t a, const size_t b);
   friend bool z_axis_index_cmp(const size_t a, const size_t b);
+  
   BVHNode* tree_root;
   void construct_tree(BVHNode* v);
   public:

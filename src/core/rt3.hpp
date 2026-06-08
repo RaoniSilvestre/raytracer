@@ -2,5 +2,5 @@
 
 struct RunningOptions {
   std::string input;
-  bool singlethread;
+  bool singlethread = false;
 };
