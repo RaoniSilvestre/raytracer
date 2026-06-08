@@ -1,6 +1,6 @@
 #include "core/bounding_box.hpp"
 
-bool BoundingBox::intersect_p(const Ray& r, Point3& hit1, Point3& hit2){
+bool BoundingBox::intersect_p(const Ray& r, [[maybe_unused]]double hit1, [[maybe_unused]]double hit2){
   double tl0, tl1, tl2;
   double th0, th1, th2;
   tl0 = (this->lower_limit.x() - r.origem.x())/r.direcao.x();
@@ -23,11 +23,14 @@ bool BoundingBox::intersect_p(const Ray& r, Point3& hit1, Point3& hit2){
   tfar2 = std::fmax(tl2, th2);
 
   double tclose, tfar;
-  tclose = std::fmin(tfar0, std::fmin(tfar1, tfar2));
-  tfar = std::fmax(tclose0, std::fmax(tclose1, tclose2));
+  tclose = std::fmax(tclose0, std::fmin(tclose1, tclose2));
+  tfar = std::fmin(tfar0, std::fmax(tfar1, tfar2));
   if(tclose < tfar){
-    hit1 = r(tclose);
-    hit2 = r(tfar);
+    if(tfar < 0){
+      return false;
+    }
+    hit1 = tclose;
+    hit2 = tfar;
     return true;
   }
   else{

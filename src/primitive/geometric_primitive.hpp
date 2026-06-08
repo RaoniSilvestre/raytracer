@@ -1,4 +1,5 @@
 #pragma once
+#include "core/bounding_box.hpp"
 #include "core/primitive.hpp"
 #include "core/shape.hpp"
 #include "math/vector_3.hpp"
@@ -14,7 +15,9 @@ public:
   std::optional<Surfel> intersect(const Ray &r) const override;
   Material *get_material() const override;
   Point3 get_center() const override;
-
+  BoundingBox get_bounding_box() const override{
+    return geoshape->get_bounding_box();
+  }
 private:
   std::shared_ptr<Material> material;
   std::shared_ptr<Shape> geoshape;

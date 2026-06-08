@@ -6,7 +6,9 @@
 struct BoundingBox{
   Point3 lower_limit;
   Point3 upper_limit;
-  
+  Point3 get_centroid() const{
+    return 0.5*lower_limit+0.5*upper_limit;
+  }
   friend BoundingBox unite(const BoundingBox& b1, const BoundingBox &b2){
     Point3 new_lower =
      {std::min(b1.lower_limit.x(), b2.lower_limit.x()), 
@@ -19,6 +21,6 @@ struct BoundingBox{
     
     return {new_lower, new_upper};
   }
-  bool intersect_p(const Ray& r, Point3& hit1, Point3& hit2);
+  bool intersect_p(const Ray& r, double hit1, double hit2);
 };
 

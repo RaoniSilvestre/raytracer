@@ -1,6 +1,7 @@
 #include "integrator/depth_integrator.hpp"
 #include "aggregates/aggregate_list.hpp"
 #include "core/scene.hpp"
+#include "primitive/aggregate_primitive.hpp"
 #include <algorithm>
 #include <limits>
 
@@ -24,8 +25,8 @@ void DepthIntegrator::preprocess(const Scene &scene) {
   std::cout << ">>> Preprocessing image\n";
   double min_t_dist = 0;
   double max_t_dist = std::numeric_limits<double>::infinity();
-  AggregateList* agglist = dynamic_cast<AggregateList*>(scene.objects_aggregate.get());
-  for (const auto &obj : agglist->objects) {
+  AggregatePrimitive* agg = dynamic_cast<AggregatePrimitive*>(scene.objects_aggregate.get());
+  for (const auto &obj : agg->get_objects_list()) {
     double dist = (obj->get_center() - camera->origin).length();
     min_t_dist = std::min(min_t_dist, dist);
     max_t_dist = std::max(max_t_dist, dist);

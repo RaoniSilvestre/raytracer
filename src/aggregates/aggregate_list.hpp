@@ -14,4 +14,8 @@ public:
   std::optional<Surfel> intersect(const Ray &r) const override;
   const Material *get_material() const override;
   std::vector<std::unique_ptr<Primitive>> objects;
+  const std::vector<std::unique_ptr<Primitive>>& get_objects_list() const override{
+    return objects;
+  } 
+
 };

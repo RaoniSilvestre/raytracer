@@ -1,4 +1,5 @@
 #pragma once
+#include "core/bounding_box.hpp"
 #include "core/material.hpp"
 #include "core/param_set.hpp"
 #include "core/ray.hpp"
@@ -17,4 +18,5 @@ public:
   virtual bool intersect_p(const Ray &r) const = 0;
   virtual std::optional<Surfel> intersect(const Ray &r) const = 0;
   virtual const Material *get_material() const = 0;
+  virtual BoundingBox get_bounding_box() const {return {{0., 0.,0.},{0., 0.,0.}};};
 };
