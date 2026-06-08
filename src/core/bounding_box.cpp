@@ -3,13 +3,13 @@
 bool BoundingBox::intersect_p(const Ray& r, Point3& hit1, Point3& hit2){
   double tl0, tl1, tl2;
   double th0, th1, th2;
-  tl0 = this->lower_limit.x() - r.origem.x();
-  tl1 = this->lower_limit.y() - r.origem.y();
-  tl2 = this->lower_limit.z() - r.origem.z();
+  tl0 = (this->lower_limit.x() - r.origem.x())/r.direcao.x();
+  tl1 = (this->lower_limit.y() - r.origem.y())/r.direcao.y();
+  tl2 = (this->lower_limit.z() - r.origem.z())/r.direcao.z();
 
-  th0 = this->upper_limit.x() - r.origem.x();
-  th1 = this->upper_limit.y() - r.origem.y();
-  th2 = this->upper_limit.z() - r.origem.z();
+  th0 = (this->upper_limit.x() - r.origem.x())/r.direcao.x();
+  th1 = (this->upper_limit.y() - r.origem.y())/r.direcao.y();
+  th2 = (this->upper_limit.z() - r.origem.z())/r.direcao.z();
 
   double tclose0, tclose1, tclose2;
   double tfar0, tfar1, tfar2;
