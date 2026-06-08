@@ -16,7 +16,8 @@ std::optional<Surfel> AggregateBVH::intersect(const Ray &r) const{
   std::optional<Surfel> s = std::nullopt;
   double closest_t = std::numeric_limits<double>::infinity();
 
-  std::vector<BVHNode*> nodes_to_visit; 
+  std::vector<BVHNode*> nodes_to_visit;
+  nodes_to_visit.reserve(20); 
   nodes_to_visit.push_back(tree_root);
   while(!nodes_to_visit.empty()){
     double hit_t1 = 0., hit_t2 = 0.;
@@ -24,7 +25,7 @@ std::optional<Surfel> AggregateBVH::intersect(const Ray &r) const{
     nodes_to_visit.pop_back();
     if(tovisit != nullptr && tovisit->box_node.intersect_p(r, hit_t1, hit_t2)){
       if(tovisit->children[0] == nullptr){
-        for(size_t i = 0; i < max_prims_per_node; i++){
+        for(size_t i = 0; i < tovisit->indexes.size(); i++){
           auto test_s = (*BVHNode::objectsptr)[tovisit->indexes[i]]->intersect(r);
           if(test_s && test_s->t < closest_t){
             s = test_s;
@@ -33,11 +34,11 @@ std::optional<Surfel> AggregateBVH::intersect(const Ray &r) const{
         }
       }
       else{
-        // if(hit_t1 > closest_t){
-        //   continue;
-        // }
-        nodes_to_visit.push_back(tovisit->children[1]);
+        if(hit_t1 > closest_t){
+          continue;
+        }
         nodes_to_visit.push_back(tovisit->children[0]);
+        nodes_to_visit.push_back(tovisit->children[1]);
       }
     }
   }
@@ -76,7 +77,7 @@ void AggregateBVH::construct_tree(BVHNode* b){
   if(b->indexes.size() <= max_prims_per_node){
     return;
   }
-  const auto cmp_func = axis_index_cmp[biggest_axis_in_vec(b->box_node.get_centroid())];
+  const auto cmp_func = axis_index_cmp[biggest_axis_in_vec(b->box_node.upper_limit-b->box_node.lower_limit)];
   std::sort(b->indexes.begin(), b->indexes.end(), cmp_func);
 
   const size_t vec_size = b->indexes.size();
@@ -84,12 +85,12 @@ void AggregateBVH::construct_tree(BVHNode* b){
   size_t mid_more = mid;
   size_t mid_less = mid;
   
-  if(mid < max_prims_per_node){
-    mid_more += max_prims_per_node-mid;
-  }
-  if(vec_size-mid < max_prims_per_node){
-    mid_less -= (max_prims_per_node-(vec_size-mid));
-  }
+  // if(mid < max_prims_per_node){
+  //   mid_more += max_prims_per_node-mid;
+  // }
+  // if(vec_size-mid < max_prims_per_node){
+  //   mid_less -= (max_prims_per_node-(vec_size-mid));
+  // }
   b->children[0] = new BVHNode(b->indexes, 0ul, mid_more);
   b->children[1] = new BVHNode(b->indexes, mid_less, vec_size);
   construct_tree(b->children[0]);
@@ -99,11 +100,11 @@ void AggregateBVH::construct_tree(BVHNode* b){
 AggregateBVH::BVHNode::BVHNode(std::vector<size_t> &father_indexes, size_t begin, size_t end){
   
   indexes.reserve(end - begin);
-  indexes.emplace_back(father_indexes[0]);
-  this->box_node = (*objectsptr)[begin]->get_bounding_box();
+  indexes.emplace_back(father_indexes[begin]);
+  this->box_node = (*objectsptr)[father_indexes[begin]]->get_bounding_box();
   for (size_t i = begin+1; i<end; i++) {
     indexes.emplace_back(father_indexes[i]);
-    this->box_node = unite((*objectsptr)[i]->get_bounding_box(), this->box_node);
+    this->box_node = unite((*objectsptr)[father_indexes[i]]->get_bounding_box(), this->box_node);
   }
   children[0] = nullptr;
   children[1] = nullptr;

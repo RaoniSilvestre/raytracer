@@ -3,7 +3,7 @@
     <camera type="orthographic"  screen_window="-5.5 4.5 -1.5 1.5" /> 
     <integrator type="blinn" depth="10" />
     <film type="image" w_res="2500" h_res="750" filename="row_of_spheres_gc.png" img_type="png" gamma_corrected="true" />
-    <aggregator type="list"/>
+    <aggregator type="bvh"/>
     <world_begin/>
         <!-- <background type="single_color" color="70 130 180"/> -->
         <background type="single_color" color="0 0 0"/>
