@@ -2,9 +2,9 @@
 
 #include "generic_object.hpp"
 #include <memory>
+#include <ostream>
 #include <string>
 #include <unordered_map>
-#include <ostream>
 
 class ParamSet {
 private:
@@ -13,8 +13,8 @@ private:
 public:
   ParamSet() = default;
   /**
-  * @throws std::out_of_range if the key is not found
-  */
+   * @throws std::out_of_range if the key is not found
+   */
   template <typename T> const T &retrieve(const std::string &key) const {
     auto it = map.find(key);
     if (it == map.end()) {
@@ -43,9 +43,9 @@ public:
     ValueType<T> value_obj = ValueType<T>(obj);
     map[key] = std::make_shared<ValueType<T>>(value_obj);
   }
-  friend std::ostream& operator<<(std::ostream& os, const ParamSet &p){
+  friend std::ostream &operator<<(std::ostream &os, const ParamSet &p) {
     os << "Paramset Keys = { ";
-    for(auto a :p.map){
+    for (auto a : p.map) {
       os << a.first << ", ";
     }
     os << "}";

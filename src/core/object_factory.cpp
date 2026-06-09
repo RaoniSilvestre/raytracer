@@ -292,30 +292,80 @@ ParamSet ObjectFactory::parseObject(tinyxml2::XMLElement *tag) {
     ps.insert("point", point);
     ps.insert("normal", normal);
   } else if (type_ == "trianglemesh") {
-    // 1. Arquivo OBJ (geralmente o principal)
+
+    auto parse_bool = [](const char *val, bool default_val) -> bool {
+      if (!val)
+        return default_val;
+      std::string s(val);
+      return (s == "true" || s == "on" || s == "1");
+    };
+
+    auto parse_int = [](const char *val, int default_val) -> int {
+      if (!val)
+        return default_val;
+      return std::stoi(val);
+    };
+
+    auto parse_point3_list = [](const char *val) -> std::vector<Point3> {
+      std::vector<Point3> values;
+      if (!val)
+        return values;
+      std::stringstream ss(val);
+      double x, y, z;
+      while (ss >> x >> y >> z) {
+        values.emplace_back(x, y, z);
+      }
+      return values;
+    };
+
+    auto parse_vector3_list = [](const char *val) -> std::vector<Vector3> {
+      std::vector<Vector3> values;
+      if (!val)
+        return values;
+      std::stringstream ss(val);
+      double x, y, z;
+      while (ss >> x >> y >> z) {
+        values.emplace_back(x, y, z);
+      }
+      return values;
+    };
+
+    auto parse_indices = [](const char *val) -> std::vector<size_t> {
+      std::vector<size_t> values;
+      if (!val)
+        return values;
+      std::stringstream ss(val);
+      size_t v;
+      while (ss >> v) {
+        values.push_back(v);
+      }
+      return values;
+    };
+
     auto filename_raw = tag->Attribute("filename");
     if (filename_raw) {
       ps.insert("filename", std::string(filename_raw));
     } else {
-      // TODO: Caso não tenha filename, é pra pegar as coisas que teriam no .obj
-      // pela tag.
       ps.insert("filename", std::string(""));
+
+      ps.insert("ntriangles", parse_int(tag->Attribute("ntriangles"), 0));
+
+      ps.insert("vertices", parse_point3_list(tag->Attribute("vertices")));
+      ps.insert("normals", parse_vector3_list(tag->Attribute("normals")));
+
+      ps.insert("indices", parse_indices(tag->Attribute("indices")));
+      ps.insert("vertex_indices",
+                parse_indices(tag->Attribute("vertex_indices")));
+      ps.insert("normal_indices",
+                parse_indices(tag->Attribute("normal_indices")));
     }
 
-    auto bfc_raw = tag->Attribute("backface_cull");
-    if (bfc_raw) {
-      ps.insert("backface_cull", std::string(bfc_raw));
-    }
-
-    auto rvo_raw = tag->Attribute("reverse_vertex_order");
-    if (rvo_raw) {
-      ps.insert("reverse_vertex_order", std::string(rvo_raw));
-    }
-
-    auto cn_raw = tag->Attribute("compute_normals");
-    if (cn_raw) {
-      ps.insert("compute_normals", std::string(cn_raw));
-    }
+    ps.insert("backface_cull",
+              parse_bool(tag->Attribute("backface_cull"), true));
+    ps.insert("reverse_vertex_order",
+              parse_bool(tag->Attribute("reverse_vertex_order"), false));
+    ps.insert("compute_normals",
+              parse_bool(tag->Attribute("compute_normals"), false));
   } else {
     throw std::runtime_error("Objeto não suportado.");
   }
@@ -401,9 +451,9 @@ ParamSet ObjectFactory::parseIntegrator(tinyxml2::XMLElement *tag) {
   return ps;
 }
 
-ParamSet ObjectFactory::parseAggregate(tinyxml2::XMLElement *tag){
+ParamSet ObjectFactory::parseAggregate(tinyxml2::XMLElement *tag) {
   ParamSet ps;
-  if(!tag){
+  if (!tag) {
     ps.insert("type", std::string("list"));
     // ps.insert("type", "bvh");
     // ps.insert("max_prim_per_node", uint32_t(4));
@@ -411,20 +461,19 @@ ParamSet ObjectFactory::parseAggregate(tinyxml2::XMLElement *tag){
     return ps;
   }
   auto type_raw = tag->Attribute("type");
-  std::string type_str( type_raw ? type_raw : "bvh");//default value
-  if(type_str != "list"){
+  std::string type_str(type_raw ? type_raw : "bvh"); // default value
+  if (type_str != "list") {
     ps.insert("type", type_str);
-    if(type_str == "bvh"){
-      auto method_raw = tag->Attribute("split_method"); 
+    if (type_str == "bvh") {
+      auto method_raw = tag->Attribute("split_method");
       std::string split_method(method_raw ? method_raw : "middle");
-      
+
       auto max_per_node_raw = tag->Attribute("max_prims_per_node");
       size_t max_per_node(max_per_node_raw ? std::stoul(max_per_node_raw) : 4);
-      
+
       ps.insert("max_prim_per_node", max_per_node);
     }
-  }
-  else{
+  } else {
     std::cout << ">>> Parseando o aggregator\n";
     ps.insert("type", std::string("list"));
   }
@@ -445,7 +494,7 @@ ParamSet ObjectFactory::parseLight(tinyxml2::XMLElement *tag) {
     if (type == "directional" || type == "spot") {
       auto to = parseSingleString(tag->Attribute("to"));
       ps.insert("to", to);
-      if(type == "spot"){
+      if (type == "spot") {
         auto cutoff = std::stod(tag->Attribute("cutoff"));
         auto falloff = std::stod(tag->Attribute("falloff"));
         ps.insert("cutoff", cutoff);

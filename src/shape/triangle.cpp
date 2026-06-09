@@ -1,9 +1,8 @@
 /// @file triangle.cpp
-#include <chrono>
 #include <cstddef>
 #include <iostream>
-#include <iterator>
 #include <memory>
+#include <string>
 
 #include "math/point_2.hpp"
 #include "math/vector_3.hpp"
@@ -18,55 +17,50 @@ Point3 Triangle::get_center() const { return (A() + B() + C()) / 3; }
 constexpr double EPSILON = 1e-8;
 
 std::optional<Surfel> Triangle::intersect(const Ray &r) const {
-  // Eixo X nas coordenadas baricêntricas (Edge 1)
+
   Vector3 edge1 = B() - A();
-  // Eixo Y nas coordenadas baricêntricas (Edge 2)
   Vector3 edge2 = C() - A();
 
   Vector3 pvec = cross(r.direcao, edge2);
   Vector3 tvec = r.origem - A();
   Vector3 qvec = cross(tvec, edge1);
 
-  // Determinante a partir do produto misto
-  //
-  // Faz tipo um paralelogramo com os 3 vetores e gera o determinante (volume)
-  // desse paralelogramo.
   double det = dot(edge1, pvec);
 
-  if (std::abs(det) < EPSILON) {
-    return std::nullopt;
+  if (backface_cull) {
+    if (det < EPSILON)
+      return std::nullopt;
+  } else {
+    if (std::abs(det) < EPSILON)
+      return std::nullopt;
   }
-  // Divisões de crammer
+
   double beta = dot(tvec, pvec) / det;
   double gamma = dot(r.direcao, qvec) / det;
   double t = dot(edge2, qvec) / det;
 
-  if (beta < 0.0 || beta > 1.0) {
+  if (beta < 0.0 || beta > 1.0)
     return std::nullopt;
-  }
-
-  if (gamma < 0.0 || beta + gamma > 1.0) {
+  if (gamma < 0.0 || beta + gamma > 1.0)
     return std::nullopt;
-  }
 
   if (t > EPSILON) {
-    // Calcula a terceira coordenada baricêntrica
     double alpha = 1.0 - beta - gamma;
 
-    // Interpola a normal e garante que ela continue sendo um vetor unitário
-    Vector3 interp_normal = alpha * normA() + beta * normB() + gamma * normC();
+    Vector3 nA = normA();
+    Vector3 nB = normB();
+    Vector3 nC = normC();
 
+    Vector3 interp_normal = alpha * nA + beta * nB + gamma * nC;
     interp_normal = unit_vector(interp_normal);
 
-    // Opcional, mas útil: Interpola as coordenadas UV da mesma forma
-    [[maybe_unused]]Point2 interp_uv = alpha * uvA() + beta * uvB() + gamma * uvC();
+    if (!backface_cull && det < 0.0) {
+      interp_normal = -interp_normal;
+    }
 
-    // Recalcula o vetor de saída (bounce/reflexão) usando a nova normal
-    // interpolada
     Vector3 outg =
         r.direcao - 2.0 * dot(r.direcao, interp_normal) * interp_normal;
 
-    // Retorna o Surfel com a normal correta interpolada
     return Surfel(r(t), interp_normal, outg, t);
   }
 
@@ -109,84 +103,105 @@ std::ostream &operator<<(std::ostream &os, const Triangle &t) {
   return os;
 }
 
-// This is the function called by the API to create a triangle mesh shape.
-/*
- * This is the entry-point function for the client code.
- * This function decodes the `ParamSet` data and, based on that, it either
- * (1) creates a triangle mesh manually (from the XML attributes), or
- * (2) calls another function to load an OBJ file and create the triangle mesh.
- *
- * @param flip_normals This flag asks to invert the normal of all triangles.
- * This is a global flag, set by a API command.
- * @param ps The ParamSet object sent from the client code with all the
- * information related to the triangle mesh read from the scene file.
- *
- * @return The list of Shape (triangles) that we read from the scene file.
- */
 std::vector<std::shared_ptr<Shape>>
 create_triangle_mesh_shape(bool flip_normals, const ParamSet &ps) {
-  bool bkfc_on{
-      true}; // Controls whether the backface cull should be done or not.
-  bool reverse_vertex_order{false}; // If this is true, we store vertices in
-                                    // reverse order inside the mesh.
-  bool compute_normals{false};      // Indicate whether we need to calculate the
-                                    // triangle's normals manually.
+  std::cout << "[TriangleMesh] Iniciando criação da malha...\n";
 
-  // This is a collection of data structures passed between function calls.
-  // This structure may be filled in with information from a OBJ file
-  // or from the XML attributes extracted from the scene file itself.
-  std::shared_ptr<TriangleMesh> mesh =
-      std::make_shared<TriangleMesh>(); // Default Ctro.
+  bool bkfc_on =
+      ps.has("backface_cull") ? ps.retrieve<bool>("backface_cull") : true;
+  bool reverse_vertex_order = ps.has("reverse_vertex_order")
+                                  ? ps.retrieve<bool>("reverse_vertex_order")
+                                  : false;
+  bool compute_normals =
+      ps.has("compute_normals") ? ps.retrieve<bool>("compute_normals") : false;
 
-  // Retrieve filename.
-  std::string filename = ps.retrieve<std::string>(
-      "filename"); // Retrieving data associated with 'filename' attrib.
-  // Retrieve backface ON/OFF
-  std::string bkf_on_str = ps.retrieve<std::string>("backface_cull");
-  if (bkf_on_str == "off" or bkf_on_str == "false") {
-    bkfc_on = false;
-  }
-  // Retrieve Reverse vertex order ON/OFF
-  std::string rvo_str = ps.retrieve<std::string>("reverse_vertex_order");
-  if (rvo_str == "on" or rvo_str == "true") {
-    reverse_vertex_order = true;
-  }
-  // Retrieve compute normals flag
-  std::string cn_str = ps.retrieve<std::string>("compute_normals");
-  if (cn_str == "on" or cn_str == "true") {
-    compute_normals = true;
-  }
+  std::shared_ptr<TriangleMesh> mesh = std::make_shared<TriangleMesh>();
 
-  // Here we have only two option: read mesh data from OBJ file or from the
-  // ParamSet.
-  if (filename !=
-      "") { // Read mesh data from an OBJ file provided in the scene file.
-    // Call our auxiliary function that interfaces with tinyobjloader API.
+  std::string filename =
+      ps.has("filename") ? ps.retrieve<std::string>("filename") : "";
+
+  if (!filename.empty()) {
+    std::cout << ">>> Carregando malha do arquivo OBJ: " << filename << "\n";
     if (load_mesh_data(filename, reverse_vertex_order, compute_normals,
                        flip_normals, mesh)) {
       std::cout << ">>> Mesh data successfuly loaded!\n";
     } else {
       std::cout << ">>> Mesh data loading failed!\n";
     }
-  } else { // This means we must read the mesh data from the scene file, not
-           // from the OBJ file.
+  } else {
+    std::cout << ">>> Carregando malha diretamente das tags XML...\n";
 
-    // TODO: retrieve the attributes of the triangle mesh present in the XML
-    // scene file.
-    //
-    // Here you must retrieve from the ParamSet all the data that might appear
-    // in a trianglemesh object. Usually these are the vertices, normals, and
-    // indices.
-    //
-    // You should read all the data into the `tri_mesh_data` object so that the
-    // function call below works, regardless if the data came from the OBJ file
-    // or was read directly from the scene file.
+    if (ps.has("vertices")) {
+      mesh->vertices = ps.retrieve<std::vector<Point3>>("vertices");
+      std::cout << "[TriangleMesh] Vértices lidos: " << mesh->vertices.size()
+                << "\n";
+    }
+    if (ps.has("normals")) {
+      mesh->normals = ps.retrieve<std::vector<Vector3>>("normals");
+      std::cout << "[TriangleMesh] Normais lidas: " << mesh->normals.size()
+                << "\n";
+    }
+
+    if (ps.has("vertex_indices") &&
+        !ps.retrieve<std::vector<size_t>>("vertex_indices").empty()) {
+      mesh->vertex_indices = ps.retrieve<std::vector<size_t>>("vertex_indices");
+      std::cout << "[TriangleMesh] vertex_indices encontrados: "
+                << mesh->vertex_indices.size() << "\n";
+    } else if (ps.has("indices")) {
+      mesh->vertex_indices = ps.retrieve<std::vector<size_t>>("indices");
+      std::cout << "[TriangleMesh] indices (fallback) encontrados: "
+                << mesh->vertex_indices.size() << "\n";
+    }
+
+    if (ps.has("normal_indices")) {
+      mesh->normal_indices = ps.retrieve<std::vector<size_t>>("normal_indices");
+      std::cout << "[TriangleMesh] normal_indices encontrados: "
+                << mesh->normal_indices.size() << "\n";
+    }
+
+    mesh->n_triangles =
+        mesh->vertex_indices.empty() ? 0 : mesh->vertex_indices.size() / 3;
+    std::cout << "[TriangleMesh] Total de triângulos calculados: "
+              << mesh->n_triangles << "\n";
+
+    if (!mesh->normals.empty() && mesh->normal_indices.empty()) {
+      mesh->normal_indices = mesh->vertex_indices;
+      std::cout
+          << "[TriangleMesh] Fallback 1:1 aplicado para normal_indices.\n";
+    }
+
+    if (mesh->normals.empty()) {
+      mesh->normals.emplace_back(0.0f, 1.0f, 0.0f);
+      std::cout << "[TriangleMesh] Injetando normal dummy (0, 1, 0)...\n";
+    }
+    if (mesh->normal_indices.empty()) {
+      mesh->normal_indices.resize(mesh->vertex_indices.size(), 0);
+      std::cout << "[TriangleMesh] Preenchendo normal_indices com tamanho "
+                << mesh->normal_indices.size() << "...\n";
+    }
+
+    if (mesh->uvcoords.empty()) {
+      mesh->uvcoords.emplace_back(0.0f, 0.0f);
+    }
+    if (mesh->uvcoord_indices.empty()) {
+      mesh->uvcoord_indices.resize(mesh->vertex_indices.size(), 0);
+      std::cout << "[TriangleMesh] Preenchendo uvcoord_indices com tamanho "
+                << mesh->uvcoord_indices.size() << "...\n";
+    }
+
+    if (reverse_vertex_order) {
+      std::cout
+          << "[TriangleMesh] Aplicando Reverse Vertex Order no winding...\n";
+      for (size_t i = 0; i < mesh->vertex_indices.size(); i += 3) {
+        std::swap(mesh->vertex_indices[i], mesh->vertex_indices[i + 2]);
+        std::swap(mesh->normal_indices[i], mesh->normal_indices[i + 2]);
+        std::swap(mesh->uvcoord_indices[i], mesh->uvcoord_indices[i + 2]);
+      }
+    }
   }
 
-  // At this point, the tri_mesh_data object has already been filled in with
-  // data coming either from a OBJ file or from the scene file.
-  return create_triangle_mesh(mesh,
-                              bkfc_on); // Note the use of move semantics here.
+  std::cout << "[TriangleMesh] Malha pronta. Gerando shapes e retornando...\n";
+  return create_triangle_mesh(mesh, bkfc_on);
 }
 
 /// This function calls the basic tinyobjloader loading function and stores all
@@ -224,12 +239,14 @@ bool load_mesh_data(const std::string &filename, bool rvo, bool cn, bool fn,
 
   // // Milliseconds (10^-3)
   // std::cout << "\t\t>>> "
-  //           << std::chrono::duration<double, std::milli>(diff).count() << " ms"
+  //           << std::chrono::duration<double, std::milli>(diff).count() << "
+  //           ms"
   //           << '\n';
 
   // // Nanoseconds (10^-9)
   // std::cout << "\t\t>>> "
-  //           << std::chrono::duration<double, std::nano>(diff).count() << " ns"
+  //           << std::chrono::duration<double, std::nano>(diff).count() << "
+  //           ns"
   //           << '\n';
 
   // // Seconds
@@ -280,8 +297,10 @@ void extract_obj_data(const tinyobj::attrib_t &attrib,
   auto n_vertices{attrib.vertices.size() / 3};
   for (auto idx_v{0U}; idx_v < n_vertices; idx_v++) {
     // std::cout << "   v[" << static_cast<long>(idx_v) << "] = ( "
-    //           << static_cast<double>(attrib.vertices[(3 * idx_v) + 0]) << ", "
-    //           << static_cast<double>(attrib.vertices[(3 * idx_v) + 1]) << ", "
+    //           << static_cast<double>(attrib.vertices[(3 * idx_v) + 0]) << ",
+    //           "
+    //           << static_cast<double>(attrib.vertices[(3 * idx_v) + 1]) << ",
+    //           "
     //           << static_cast<double>(attrib.vertices[(3 * idx_v) + 2])
     //           << " )\n";
 
@@ -310,7 +329,8 @@ void extract_obj_data(const tinyobj::attrib_t &attrib,
     // std::cout << "   n[" << static_cast<long>(idx_n) << "] = ( "
     //           << static_cast<double>(attrib.normals[(3 * idx_n) + 0]) << ", "
     //           << static_cast<double>(attrib.normals[(3 * idx_n) + 1]) << ", "
-    //           << static_cast<double>(attrib.normals[(3 * idx_n) + 2]) << " )\n";
+    //           << static_cast<double>(attrib.normals[(3 * idx_n) + 2]) << "
+    //           )\n";
 
     // Store the normal.
     md->normals.push_back(Vector3{attrib.normals[(3 * idx_n) + 0] * flip,
@@ -322,7 +342,8 @@ void extract_obj_data(const tinyobj::attrib_t &attrib,
   auto n_texcoords{attrib.texcoords.size() / 2};
   for (auto idx_tc{0U}; idx_tc < n_texcoords; idx_tc++) {
     // std::cout << "   t[" << static_cast<long>(idx_tc) << "] = ( "
-    //           << static_cast<double>(attrib.texcoords[(2 * idx_tc) + 0]) << ", "
+    //           << static_cast<double>(attrib.texcoords[(2 * idx_tc) + 0]) <<
+    //           ", "
     //           << static_cast<double>(attrib.texcoords[(2 * idx_tc) + 1])
     //           << " )\n";
 
@@ -341,7 +362,8 @@ void extract_obj_data(const tinyobj::attrib_t &attrib,
     // std::cout << "The shape[" << idx_s << "].name = " << shapes[idx_s].name
     //           << '\n';
     // std::cout << "Size of shape[" << idx_s << "].mesh.indices: "
-    //           << static_cast<unsigned long>(shapes[idx_s].mesh.indices.size())
+    //           << static_cast<unsigned
+    //           long>(shapes[idx_s].mesh.indices.size())
     //           << '\n';
     // std::cout << "shape[" << idx_s << "].num_faces: "
     //           << static_cast<unsigned long>(
