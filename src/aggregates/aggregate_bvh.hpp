@@ -11,7 +11,7 @@ public:
   std::optional<Surfel> intersect(const Ray &r) const override;
   const Material *get_material() const override;
 
-  void print_tree();
+  std::string print_tree();
 
 private:
   friend size_t biggest_axis_in_vec(const Vector3 &v);

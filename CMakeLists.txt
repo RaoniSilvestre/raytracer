@@ -24,7 +24,6 @@ FetchContent_MakeAvailable(tinyxml2)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
   add_compile_options(
         # -Wno-error=old-style-cast
-        -g
         -Wall
         -Wextra
         -Wpedantic

@@ -6,12 +6,14 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <sstream>
+#include <string>
 
 std::vector<std::unique_ptr<Primitive>>* AggregateBVH::BVHNode::objectsptr = nullptr;
 
-void AggregateBVH::print_tree() {
-  std::string out = "";
-  std::cout << "tree: {";
+std::string AggregateBVH::print_tree() {
+  std::ostringstream out;
+  out << "tree: {";
   struct test {
     BVHNode *v;
     int depth;
@@ -23,51 +25,52 @@ void AggregateBVH::print_tree() {
     auto tovisit = nodes_to_visit.back();
     nodes_to_visit.pop_back();
     for (int i = 0; i < tovisit.depth; i++) {
-      std::cout << "---";
+      out << "---";
     }
     if (tovisit.v->children[0] == nullptr) {
-      std::cout << "leafnode{ ";
-      std::cout << "Box:";
-      std::cout << "Lower: (";
-      std::cout << tovisit.v->box_node.lower_limit.x();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.lower_limit.y();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.lower_limit.z();
-      std::cout << "), ";
-      std::cout << "Upper: (";
-      std::cout << tovisit.v->box_node.upper_limit.x();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.upper_limit.y();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.upper_limit.z();
-      std::cout << "), primcount: ";
-      std::cout << tovisit.v->indx_count;
-      std::cout << "}\n";
+      out << "leafnode{ ";
+      out << "Box:";
+      out << "Lower: (";
+      out << tovisit.v->box_node.lower_limit.x();
+      out << ", ";
+      out << tovisit.v->box_node.lower_limit.y();
+      out << ", ";
+      out << tovisit.v->box_node.lower_limit.z();
+      out << "), ";
+      out << "Upper: (";
+      out << tovisit.v->box_node.upper_limit.x();
+      out << ", ";
+      out << tovisit.v->box_node.upper_limit.y();
+      out << ", ";
+      out << tovisit.v->box_node.upper_limit.z();
+      out << "), primcount: ";
+      out << tovisit.v->indx_count;
+      out << "}\n";
     } else {
-      std::cout << "interiornode{ ";
-      std::cout << "Box:";
-      std::cout << "Lower: (";
-      std::cout << tovisit.v->box_node.lower_limit.x();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.lower_limit.y();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.lower_limit.z();
-      std::cout << "), ";
-      std::cout << "Upper: (";
-      std::cout << tovisit.v->box_node.upper_limit.x();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.upper_limit.y();
-      std::cout << ", ";
-      std::cout << tovisit.v->box_node.upper_limit.z();
-      std::cout << "), primcount: ";
-      std::cout << tovisit.v->indx_count;
-      std::cout << "}\n";
+      out << "interiornode{ ";
+      out << "Box:";
+      out << "Lower: (";
+      out << tovisit.v->box_node.lower_limit.x();
+      out << ", ";
+      out << tovisit.v->box_node.lower_limit.y();
+      out << ", ";
+      out << tovisit.v->box_node.lower_limit.z();
+      out << "), ";
+      out << "Upper: (";
+      out << tovisit.v->box_node.upper_limit.x();
+      out << ", ";
+      out << tovisit.v->box_node.upper_limit.y();
+      out << ", ";
+      out << tovisit.v->box_node.upper_limit.z();
+      out << "), primcount: ";
+      out << tovisit.v->indx_count;
+      out << "}\n";
       nodes_to_visit.emplace_back(tovisit.v->children[0], tovisit.depth + 1);
       nodes_to_visit.emplace_back(tovisit.v->children[1], tovisit.depth + 1);
     }
   }
-  out += "}";
+  out << "}";
+  return out.str();
 }
 
 
