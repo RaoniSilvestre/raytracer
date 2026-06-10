@@ -21,6 +21,6 @@ struct BoundingBox{
     
     return {new_lower, new_upper};
   }
-  bool intersect_p(const Ray& r, double hit1, double hit2);
+  bool intersect_p(const Ray& r, double &hit1, double &hit2) const;
 };
 

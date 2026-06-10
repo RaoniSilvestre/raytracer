@@ -3,7 +3,7 @@
     <camera type="perspective" fovy="65" />
     <film type="image" x_res="1600" y_res="1200" filename="cannonball_scene.png" img_type="png" />
     <integrator type="blinn_phong" depth="3" />
-    <aggregator type="bvh" max_prim_per_node = "200"/>
+    <aggregator type="bvh" max_prim_per_node = "4"/>
     <world_begin/>
         <!-- The Background -->
         <background type="4_colors" bl="176 214 175" tl="4 99 202" tr="4 99 202" br="176 214 175" />

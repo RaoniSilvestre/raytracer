@@ -19,12 +19,13 @@ private:
   size_t max_prims_per_node;
   struct BVHNode {
   
-    static const std::vector<std::unique_ptr<Primitive>> *objectsptr;
+    static std::vector<std::unique_ptr<Primitive>> *objectsptr;
     BoundingBox box_node;
-    std::vector<size_t> indexes;
+    size_t indx_begin;
+    size_t indx_count;
     BVHNode *children[2];
-    BVHNode(std::vector<size_t> &father_indexes, size_t begin, size_t end);
-    BVHNode(const std::vector<std::unique_ptr<Primitive>> &obj);
+    BVHNode(size_t begin, size_t end);
+    BVHNode(std::vector<std::unique_ptr<Primitive>> &obj);
   };
 
   friend bool x_axis_index_cmp(const size_t a, const size_t b);

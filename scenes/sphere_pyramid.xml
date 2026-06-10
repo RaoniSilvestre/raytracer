@@ -2,7 +2,7 @@
     <lookat look_from="-25 33.333332 -50" look_at="25 11.951779 25" up="0 1 0" />
     <camera type="perspective" fovy="45" />
     <integrator type="blinn_phong" depth="3" />
-    <film type="image" w_res="960" h_res="540" filename="sphere_pyramid.png" img_type="png" gamma_corrected="false" />
+    <film type="image" w_res="1920" h_res="1080" filename="sphere_pyramid.png" img_type="png" gamma_corrected="false" />
 
     <aggregator type="bvh"/>
 
